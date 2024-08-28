@@ -1,44 +1,37 @@
 <template>
   <div>
     <h1>Welcome, {{ username }}!</h1>
-    <p>Your role: {{ role }}</p>
+    <p>Your roles: {{ roles.join(', ') }}</p> 
     <p>This is your dashboard.</p>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   data() {
     return {
-      username: '',
-      role: ''
+      username: '', // Local state for the user's name
     };
   },
+  computed: {
+    ...mapGetters('role', ['userRoles']), // Get the roles from the 'role' Vuex module
+    roles() {
+      return this.userRoles; //local computed property 
+    },
+  },
   async created() {
-    await this.fetchUserInfo(); // Fetch user info (name and role) when the component is created
+    // Fetch user data when the component is created
+    await this.fetchUser(); 
+    await this.fetchUserRole(); 
+
+    // After fetching, set the local state for the username
+    this.username = this.$store.state.user.user?.name || 'Guest';
   },
   methods: {
-    async fetchUserInfo() {
-      try {
-        // Fetch user role
-        const roleResponse = await axios.get('/api/user-role');
-        console.log('Role Response:', roleResponse); // Log role response
-        const roles = roleResponse.data.roles;
-
-        // Fetch user name
-        const userResponse = await axios.get('/api/me');
-        console.log('User Response:', userResponse); // Log user response
-        const username = userResponse.data.name;
-
-        // Set the fetched data to be displayed
-        this.username = username;
-        this.role = roles.length > 0 ? roles[0] : 'No role';
-      } catch (error) {
-        console.error('Error fetching user info:', error);
-      }
-    }
+    ...mapActions('user', ['fetchUser']), // Fetch user from 'user.js'
+    ...mapActions('role', ['fetchUserRole']), // Fetch roles from 'role.js'
   }
 };
 </script>
