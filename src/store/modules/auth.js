@@ -26,6 +26,30 @@ const authModule = {
         throw error;
       }
     },
+    async registerUser() {
+      if (this.password !== this.passwordConfirm) {
+        this.errorMessage = 'Passwords do not match';
+        return;
+      }
+    
+      try {
+        await this.register({ name: this.name, email: this.email, password: this.password, password_confirmation: this.passwordConfirm });
+        this.$router.push('/login');
+      } catch (error) {
+        this.errorMessage = error.message || 'Registration failed. Please try again.';
+      }
+    },    
+    async register({ commit }, credentials) {
+      try {
+        const response = await axios.post('/register', credentials);
+        const token = response.data.token;
+        commit('setToken', token); 
+        return response.data;
+      } catch (error) {
+        console.error('Registration failed', error.response.data);
+        throw error.response.data;
+      }
+    },
     async logout({ commit }) {
       try {
         await axios.post('/logout');

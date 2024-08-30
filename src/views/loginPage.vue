@@ -52,7 +52,7 @@
             </label>
           </div>
           <div class="text-sm">
-            <router-link to="/forgot-password" class="font-medium text-blue-600 hover:text-blue-500">
+            <router-link to="/password/reset" class="font-medium text-blue-600 hover:text-blue-500">
               Forgot password?
             </router-link>
           </div>
