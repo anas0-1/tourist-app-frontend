@@ -3,6 +3,7 @@ import LoginPage from '@/views/loginPage.vue';
 import RegisterPage from '@/views/RegisterPage.vue';
 import RequestResetLinkPage from '@/views/RequestResetLink.vue';
 import ResetPasswordPage from '@/views/ResetPassword.vue';
+import HomePage from '@/views/HomePage.vue';
 import Dashboard from '@/views/PageDashboard.vue';
 
 
@@ -23,11 +24,6 @@ const routes = [
     name: 'RequestResetLink',
     component: RequestResetLinkPage
   },
-  // {
-  //   path: '/reset-password/:token',
-  //   name: 'ResetPassword',
-  //   component: ResetPasswordPage
-  // },
   {
     path: '/reset-password',
     name: 'reset-password',
@@ -44,7 +40,12 @@ const routes = [
   },
   {
     path: '/',
-    redirect: '/login',
+    name: 'HomePage',
+    component: HomePage
+  },
+  {
+    path: '/',
+    redirect: '/home',
   },
 ];
 
