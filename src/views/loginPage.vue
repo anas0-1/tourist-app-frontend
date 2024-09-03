@@ -100,7 +100,7 @@ export default {
     async loginUser() {
       try {
         await this.login({ email: this.email, password: this.password });
-        this.$router.push('/dashboard');
+        this.$router.push('/');
       } catch (error) {
         this.errorMessage = 'Invalid email or password';
       }
