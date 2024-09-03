@@ -1,57 +1,35 @@
-import axios from '@/axios'; // Import the custom Axios instance
+import axios from '@/axios';
 
 const userModule = {
   namespaced: true,
   state: {
     user: null,
-    roles: [],
   },
   mutations: {
     setUser(state, user) {
       state.user = user;
     },
-    clearUser(state) {
+    clearUserData(state) {
       state.user = null;
-      state.roles = [];
     },
-    setRoles(state, roles) {
-      state.roles = roles;
-    }
   },
   actions: {
-    async fetchUser({ commit, rootState }) {
-      if (!rootState.auth.token) return;
-
+    async fetchUser({ commit }) {
       try {
-        const response = await axios.get('/me', {
-          headers: {
-            Authorization: `Bearer ${rootState.auth.token}`,
-          },
-        });
+        const response = await axios.get('/me');
         commit('setUser', response.data);
       } catch (error) {
         console.error('Failed to fetch user', error);
-        commit('clearUser');
+        throw error;
       }
     },
-    async fetchUserRole({ commit, rootState }) {
-      if (!rootState.auth.token) return;
-
-      try {
-        const response = await axios.get('/user-role', {
-          headers: {
-            Authorization: `Bearer ${rootState.auth.token}`,
-          },
-        });
-        commit('setRoles', response.data.roles);
-      } catch (error) {
-        console.error('Failed to fetch user role', error);
-      }
-    }
+    clearUserData({ commit }) {
+      commit('clearUserData');
+    },
   },
   getters: {
-    userRole: state => state.roles,
-  }
+    user: state => state.user,
+  },
 };
 
 export default userModule;

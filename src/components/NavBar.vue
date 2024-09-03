@@ -73,18 +73,30 @@
 </template>
 
 <script>
-import { computed, ref, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
 
 export default {
+  name: 'NavBar',
   setup() {
     const store = useStore();
-    const router = useRouter();
+    const isLoggedIn = computed(() => store.getters['auth/isAuthenticated']);
+    const username = computed(() => store.state.user.user?.name || 'Guest');
     const showDropdown = ref(false);
 
-    const isLoggedIn = computed(() => !!localStorage.getItem('access_token'));
-    const username = computed(() => store.state.user.user?.name || 'Loading...');
+    const fetchUser = async () => {
+      try {
+        await store.dispatch('user/fetchUser');
+      } catch (error) {
+        console.error('Failed to fetch user', error);
+      }
+    };
+
+    onMounted(() => {
+      if (isLoggedIn.value) {
+        fetchUser();
+      }
+    });
 
     const toggleDropdown = () => {
       showDropdown.value = !showDropdown.value;
@@ -96,26 +108,11 @@ export default {
 
     const logout = async () => {
       try {
-        await fetch('/api/logout', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-            'Content-Type': 'application/json',
-          },
-        });
-        localStorage.removeItem('access_token');
-        store.commit('user/clearUser');
-        router.push('/login');
+        await store.dispatch('auth/logout');
       } catch (error) {
         console.error('Logout failed', error);
       }
     };
-
-    onMounted(async () => {
-      if (isLoggedIn.value) {
-        await store.dispatch('user/fetchUser');
-      }
-    });
 
     return {
       isLoggedIn,
@@ -128,7 +125,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-/* Custom styles for dropdown and nav items */
-</style>

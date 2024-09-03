@@ -1,7 +1,7 @@
-import axios from '@/axios'; // Import the custom Axios instance
+import axios from '@/axios';
 
 const authModule = {
-  namespaced: true, // Important for modularizing Vuex
+  namespaced: true,
   state: {
     token: localStorage.getItem('access_token') || '',
   },
@@ -13,7 +13,7 @@ const authModule = {
     clearToken(state) {
       state.token = '';
       localStorage.removeItem('access_token');
-    }
+    },
   },
   actions: {
     async login({ commit }, credentials) {
@@ -21,29 +21,17 @@ const authModule = {
         const response = await axios.post('/login', credentials);
         const token = response.data.token;
         commit('setToken', token);
+        return response.data;
       } catch (error) {
         console.error('Login failed', error);
         throw error;
       }
     },
-    async registerUser() {
-      if (this.password !== this.passwordConfirm) {
-        this.errorMessage = 'Passwords do not match';
-        return;
-      }
-    
-      try {
-        await this.register({ name: this.name, email: this.email, password: this.password, password_confirmation: this.passwordConfirm });
-        this.$router.push('/login');
-      } catch (error) {
-        this.errorMessage = error.message || 'Registration failed. Please try again.';
-      }
-    },    
     async register({ commit }, credentials) {
       try {
         const response = await axios.post('/register', credentials);
         const token = response.data.token;
-        commit('setToken', token); 
+        commit('setToken', token);
         return response.data;
       } catch (error) {
         console.error('Registration failed', error.response.data);
@@ -52,16 +40,19 @@ const authModule = {
     },
     async logout({ commit }) {
       try {
-        await axios.post('/logout');
-        commit('clearToken');
+        await axios.post('/logout'); // Ensure backend is called if necessary
       } catch (error) {
         console.error('Logout failed', error);
       }
-    }
+      commit('clearToken');
+      // Clear user data
+      this.dispatch('user/clearUserData');
+      window.location.href = '/login'; // Redirect after logout
+    },
   },
   getters: {
     isAuthenticated: state => !!state.token,
-  }
+  },
 };
 
 export default authModule;
