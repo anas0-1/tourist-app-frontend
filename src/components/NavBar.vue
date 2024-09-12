@@ -1,5 +1,5 @@
 <template>
-  <nav class="bg-white text-black">
+  <nav class="bg-white text-black shadow-black">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <!-- Logo -->
@@ -81,7 +81,7 @@ export default {
   setup() {
     const store = useStore();
     const isLoggedIn = computed(() => store.getters['auth/isAuthenticated']);
-    const username = computed(() => store.state.user.user?.name || 'Guest');
+    const username = computed(() => store.state.user.user?.name || 'Loading ...');
     const showDropdown = ref(false);
 
     const fetchUser = async () => {

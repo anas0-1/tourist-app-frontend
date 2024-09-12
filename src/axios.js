@@ -7,7 +7,7 @@ const instance = axios.create({
   }
 });
 
-// Optional: Add an interceptor to automatically add the token to requests
+// Add an interceptor to automatically add the token to requests
 instance.interceptors.request.use(config => {
   const token = localStorage.getItem('access_token');
   if (token) {

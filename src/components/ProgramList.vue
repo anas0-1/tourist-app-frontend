@@ -1,154 +1,74 @@
 <template>
-  <div class="min-h-screen bg-light-blue-100">
-    <!-- Include Navbar at the top -->
+  <div class="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200">
     <NavBar />
-
-    <!-- Search and Filter Options (from Homepage) -->
-    <section class="py-12 bg-light-blue-100">
+    <SearchBar />
+    <!-- Program List Section -->
+    <section class="py-16 bg-amber-50">
       <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold mb-8 text-center">Find Your Perfect Program</h2>
-        <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-4">
-          <input 
-            type="text" 
-            v-model="searchQuery" 
-            placeholder="Where do you want to go?" 
-            class="w-full md:w-1/3 p-4 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent" 
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Discover Extraordinary Journeys</h2>
+        
+        <div v-if="programs.length > 0" class="flex flex-wrap gap-8 justify-center">
+          <ProgramCard
+            v-for="program in programs"
+            :key="program.id"
+            :program="program"
           />
-          <select class="w-full md:w-1/6 p-4 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
-            <option>Travel Style</option>
-            <option>Adventure</option>
-            <option>Relaxation</option>
-            <option>Cultural</option>
-          </select>
-          <select class="w-full md:w-1/6 p-4 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
-            <option>Duration</option>
-            <option>1-3 days</option>
-            <option>4-7 days</option>
-            <option>8+ days</option>
-          </select>
-          <select class="w-full md:w-1/6 p-4 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
-            <option>Budget</option>
-            <option>Economy</option>
-            <option>Standard</option>
-            <option>Luxury</option>
-          </select>
-          <button 
-            class="w-full md:w-auto bg-yellow-500 text-gray-800 py-4 px-8 rounded-lg text-lg font-semibold hover:bg-yellow-400 transition duration-300"
-          >
-            Search
-          </button>
+        </div>
+
+        <!-- No results message -->
+        <div v-else class="text-center text-gray-600 mt-6 p-8 bg-white rounded-lg shadow">
+          <i class="fas fa-search text-5xl text-gray-400 mb-4"></i>
+          <p class="text-xl">No adventures found matching your search.</p>
+          <p class="mt-2">Try adjusting your filters or explore our trending destinations!</p>
         </div>
       </div>
     </section>
 
-    <!-- Program List Section -->
-    <div class="max-w-5xl mx-auto p-6 bg-blue-100 shadow-lg rounded-lg mt-6">
-      <h1 class="text-3xl font-bold text-gray-800 mb-6">Programs</h1>
-      
-      <div v-if="filteredPrograms.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div
-          v-for="program in filteredPrograms"
-          :key="program.id"
-          class="bg-gray-50 p-4 shadow-lg rounded-lg"
-        >
-          <h2 class="text-xl font-semibold text-gray-900">{{ program.name }}</h2>
-          <p class="text-gray-600">{{ program.description }}</p>
-          <p class="text-gray-500">Duration: {{ program.time }}</p>
-          <p class="text-yellow-500">Rating: {{ program.rating }}</p>
-          <button
-            @click="editProgram(program.id)"
-            class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-          >
-            Edit
-          </button>
-          <button
-            @click="deleteProgram(program.id)"
-            class="mt-4 ml-2 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
-          >
-            Delete
-          </button>
-        </div>
+    <!-- Call to Action -->
+    <section class="py-16 bg-yellow-400">
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Ready for your next adventure?</h2>
+        <p class="text-xl text-gray-700 mb-8">Join our community and get exclusive travel deals!</p>
+        <button class="bg-blue-500 text-white py-3 px-8 rounded-lg text-lg font-semibold hover:bg-blue-600 transition duration-300 transform hover:scale-105">
+          Sign Up Now
+        </button>
       </div>
+    </section>
 
-      <!-- No results message -->
-      <div v-else class="text-center text-gray-600 mt-6">
-        No programs found matching "{{ searchQuery }}"
-      </div>
-    </div>
-
-    <!-- Include Footer at the bottom -->
     <AppFooter />
   </div>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
 import NavBar from '@/components/NavBar.vue';
 import AppFooter from '@/components/Footer.vue';
+import SearchBar from '@/components/SearchBar.vue';
+import ProgramCard from '@/components/ProgramCard.vue';
 
 export default {
   components: {
     NavBar,
-    AppFooter
-  },
-  data() {
-    return {
-      searchQuery: '', // Holds the search input
-      programs: [
-        {
-          id: 1,
-          name: "Adventure in the Alps",
-          description: "A thrilling adventure across the Alps.",
-          time: "1 week",
-          rating: 4.5
-        },
-        {
-          id: 2,
-          name: "Relaxing by the Beach",
-          description: "A relaxing getaway to the tropical beaches.",
-          time: "5 days",
-          rating: 4.8
-        },
-        {
-          id: 3,
-          name: "Safari in Africa",
-          description: "Experience the wildlife of Africa.",
-          time: "10 days",
-          rating: 4.7
-        }
-      ]
-    };
+    AppFooter,
+    SearchBar,
+    ProgramCard
   },
   computed: {
-    filteredPrograms() {
-      // Filters the programs based on the search input
-      return this.programs.filter(program =>
-        program.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        program.description.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+    ...mapGetters('program', ['allPrograms']), 
+    programs() {
+      return this.allPrograms || [];
     }
+},
+mounted() {
+    this.fetchPrograms(); 
   },
+
   methods: {
-    editProgram(id) {
-      alert(`Edit program with ID: ${id}`);
-    },
-    deleteProgram(id) {
-      alert(`Delete program with ID: ${id}`);
-    }
+    ...mapActions('program', ['fetchPrograms', 'addProgram', 'updateProgram', 'deleteProgram']) 
   }
 };
 </script>
 
 <style scoped>
-/* Updated body background color to light blue for a more pleasant look */
-.bg-light-blue-100 {
-  background-color: #ebf8ff; /* Light blue */
-}
-
-.bg-gray-50 {
-  background-color: #f9fafb; /* Light gray for contrast with white */
-}
-
-.bg-white {
-  background-color: #ffffff; /* White for program list container */
-}
+/* Add any specific styles for homepage.vue */
 </style>
