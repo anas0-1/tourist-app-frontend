@@ -1,4 +1,3 @@
-import axios from 'axios';
 import instance from '@/axios'; 
 
 const state = {
@@ -44,7 +43,7 @@ const actions = {
 
   async addProgram({ commit }, program) {
     try {
-      const response = await axios.post('/api/programs', program);
+      const response = await instance.post('/programs', program);
       commit('addProgram', response.data.program);
     } catch (error) {
       console.error('Error adding program:', error);
@@ -53,7 +52,7 @@ const actions = {
   
   async updateProgram({ commit }, { id, updatedData }) {
     try {
-      const response = await axios.put(`/api/programs/${id}`, updatedData);
+      const response = await instance.put(`/programs/${id}`, updatedData);
       commit('updateProgram', response.data.program);
     } catch (error) {
       console.error('Error updating program:', error);
@@ -62,7 +61,7 @@ const actions = {
   
   async deleteProgram({ commit }, id) {
     try {
-      await axios.delete(`/api/programs/${id}`);
+      await instance.delete(`/programs/${id}`);
       commit('deleteProgram', id);
     } catch (error) {
       console.error('Error deleting program:', error);
@@ -70,32 +69,48 @@ const actions = {
   }
 };
 
-const url = 'http://localhost:8000/storage/';
+const url = 'http://localhost:8000/storage';
 
 const mutations = {
   setPrograms: (state, programs) => {
     state.programs = programs.map(program => ({
       ...program,
-      firstImage: program.media && program.media.length > 0 ? `${url}/${program.media[0].url}` : '../assets/Snow.png'
+      images: program.media && program.media.length > 0 
+                ? program.media.map(mediaItem => `${url}${mediaItem.url}`) 
+                : ['../assets/Snow.png']
     }));
   },
   setCurrentProgram: (state, program) => {
+    const mediaUrls = program.media && program.media.length > 0 
+      ? program.media.map(mediaItem => `${url}/${mediaItem.url}`) 
+      : ['../assets/Snow.png'];
+
+    console.log('Media URLs:', mediaUrls); // Console log to check media URLs
+
     state.currentProgram = {
       ...program,
-      firstImage: program.media && program.media.length > 0 ? `${url}/${program.media[0].url}` : '../assets/Snow.png'
+      images: mediaUrls,
     };
   },
-  setActivities: (state, activities) => state.activities = activities,
-  addProgram: (state, program) => state.programs.push({
-    ...program,
-    firstImage: program.media && program.media.length > 0 ? `${url}/${program.media[0].url}` : '../assets/Snow.png'
-  }),
+  setActivities: (state, activities) => {
+    state.activities = activities;
+  },
+  addProgram: (state, program) => {
+    state.programs.push({
+      ...program,
+      images: program.media && program.media.length > 0 
+                ? program.media.map(mediaItem => `${url}${mediaItem.url}`) 
+                : ['../assets/Snow.png']
+    });
+  },
   updateProgram: (state, updatedProgram) => {
     const index = state.programs.findIndex(program => program.id === updatedProgram.id);
     if (index !== -1) {
       state.programs.splice(index, 1, {
         ...updatedProgram,
-        firstImage: updatedProgram.media && updatedProgram.media.length > 0 ? `${url}/${updatedProgram.media[0].url}` : '../assets/Snow.png'
+        images: updatedProgram.media && updatedProgram.media.length > 0 
+                  ? updatedProgram.media.map(mediaItem => `${url}${mediaItem.url}`) 
+                  : ['../assets/Snow.png']
       });
     }
   },
@@ -103,7 +118,6 @@ const mutations = {
     state.programs = state.programs.filter(program => program.id !== id);
   }
 };
-
 
 export default {
   namespaced: true,
