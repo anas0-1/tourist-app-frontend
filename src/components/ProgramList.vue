@@ -1,15 +1,15 @@
 <template>
   <div class="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200">
     <NavBar />
-    <SearchBar />
+    <SearchBar @filter-change="applyFilters" />
     <!-- Program List Section -->
     <section class="py-16 bg-amber-50">
       <div class="container mx-auto px-4">
         <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Discover Extraordinary Journeys</h2>
         
-        <div v-if="programs.length > 0" class="flex flex-wrap gap-8 justify-center">
+        <div v-if="filteredPrograms.length > 0" class="flex flex-wrap gap-8 justify-center">
           <ProgramCard
-            v-for="program in programs"
+            v-for="program in filteredPrograms"
             :key="program.id"
             :program="program"
           />
@@ -53,22 +53,48 @@ export default {
     SearchBar,
     ProgramCard
   },
-  computed: {
-    ...mapGetters('program', ['allPrograms']), 
-    programs() {
-      return this.allPrograms || [];
-    }
-},
-mounted() {
-    this.fetchPrograms(); 
+  data() {
+    return {
+      searchQuery: '',
+      selectedDuration: '',
+      selectedPrice: '',
+      filteredPrograms: []
+    };
   },
-
+  computed: {
+    ...mapGetters('program', ['allPrograms']),
+  },
+  mounted() {
+    this.fetchPrograms();
+  },
+  watch: {
+    allPrograms: {
+      immediate: true,
+      handler() {
+        this.filteredPrograms = this.allPrograms;
+      }
+    }
+  },
   methods: {
-    ...mapActions('program', ['fetchPrograms', 'addProgram', 'updateProgram', 'deleteProgram']) 
+    ...mapActions('program', ['fetchPrograms']),
+    
+    applyFilters({ searchQuery, selectedDuration, selectedPrice }) {
+      this.filteredPrograms = this.allPrograms.filter(program => {
+        const matchesQuery = !searchQuery || program.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesDuration = !selectedDuration || this.checkDuration(program.duration, selectedDuration);
+        const matchesPrice = !selectedPrice || program.price <= selectedPrice;
+
+        return matchesQuery && matchesDuration && matchesPrice;
+      });
+    },
+    checkDuration(programDuration, selectedDuration) {
+      const days = parseInt(programDuration); // Convert program duration to an integer (assuming duration is in days)
+      if (selectedDuration === '1-3 days') return days >= 1 && days <= 3;
+      if (selectedDuration === '4-7 days') return days >= 4 && days <= 7;
+      if (selectedDuration === '8-14 days') return days >= 8 && days <= 14;
+      if (selectedDuration === '15+ days') return days >= 15;
+      return true;
+    }
   }
 };
 </script>
-
-<style scoped>
-/* Add any specific styles for homepage.vue */
-</style>

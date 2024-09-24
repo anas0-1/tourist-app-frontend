@@ -1,33 +1,63 @@
 <template>
-  <div class="relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96 overflow-hidden group">
-  <div class="relative w-full h-56 overflow-hidden">
-    <img :src="program.firstImage" alt="Image of {{ program.name }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-125 group-hover:opacity-80" />
-    <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-40 transition-opacity duration-300"></div>
-  </div>
-  <div class="p-4 transition-colors duration-300">
-    <div class="flex items-center mb-2">
-      <h6 class="text-slate-800 text-xl font-semibold">{{ program.name }}</h6>
-      <div class="flex items-center gap-0.5 ml-auto">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-yellow-600">
-          <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd"></path>
-        </svg>
-        <span class="text-slate-600 ml-1.5">{{ program.rating }}</span>
+  <div class="group relative w-96 overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-xl">
+    <!-- Image container with transition -->
+    <div class="relative h-64 overflow-hidden">
+      <img
+        :src="program.firstImage"
+        :alt="`Image of ${program.name}`"
+        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
+    </div>
+
+    <!-- Content overlay -->
+    <div class="absolute inset-0 flex flex-col justify-between p-6 text-white">
+      <!-- Top section -->
+      <div class="flex items-start justify-between">
+        <span class="rounded-full bg-yellow-500 px-3 py-1 text-sm font-semibold">
+          {{ program.category }}
+        </span>
+        <div class="flex items-center space-x-1 rounded-full bg-black/30 px-2 py-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4 text-yellow-400">
+            <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+          </svg>
+          <span class="text-sm font-medium">{{ program.rating }}</span>
+        </div>
+      </div>
+
+      <!-- Bottom section -->
+      <div>
+        <h3 class="mb-2 text-2xl font-bold leading-tight">{{ program.name }}</h3>
+        <p class="mb-4 line-clamp-2 text-sm text-gray-200">{{ program.description }}</p>
+        <div class="flex flex-wrap items-center gap-4 text-sm">
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mr-1 h-4 w-4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+            </svg>
+            {{ program.location }}
+          </div>
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mr-1 h-4 w-4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ program.duration }}
+          </div>
+        </div>
       </div>
     </div>
-    <p class="text-slate-600 leading-normal font-light">{{ program.description }}</p>
-  </div>
-  <div class="px-4 py-2 flex justify-between items-center">
-    <span class="text-slate-800 font-semibold">{{ program.duration }}</span>
-    <button
-        @click="goToProgramDetails"
-        class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-        type="button"
-      >
-        Reserve
-      </button>
-  </div>
-</div>
 
+    <!-- Action bar -->
+    <div class="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-black/50 p-4 backdrop-blur-sm transition-all duration-300 group-hover:bg-black/70">
+      <span class="text-lg font-bold text-yellow-400">{{ program.price }} MAD</span>
+      <button
+        @click="goToProgramDetails"
+        class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-black transition-colors duration-300 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50"
+      >
+        Explore Now
+      </button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -38,9 +68,6 @@ export default {
       required: true
     }
   },
-  mounted() {
-    console.log('program data:', this.program);
-  },
   methods: {
     goToProgramDetails() {
       this.$router.push({ name: 'ProgramDetails', params: { id: this.program.id } });
@@ -48,18 +75,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.group:hover .group-hover\:scale-125 {
-  transform: scale(1.25);
-}
-
-.group {
-  overflow: hidden;
-}
-
-.group:hover img {
-  transform: scale(1.25);
-  opacity: 0.8;
-}
-</style>
