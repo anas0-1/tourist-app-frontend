@@ -1,43 +1,35 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import store from '@/store'; 
 
-import LoginPage from '@/views/loginPage.vue';
-import RegisterPage from '@/views/RegisterPage.vue';
-import RequestResetLinkPage from '@/views/RequestResetLink.vue';
-import ResetPasswordPage from '@/views/ResetPassword.vue';
+import LoginPage from '@/views/auth/loginPage.vue';
+import RegisterPage from '@/views/auth/RegisterPage.vue';
+import RequestResetLinkPage from '@/views/auth/RequestResetLink.vue';
+import ResetPasswordPage from '@/views/auth/ResetPassword.vue';
 import HomePage from '@/views/HomePage.vue';
-import Dashboard from '@/views/PageDashboard.vue';
 
-import ProgramForm from '@/components/ProgramForm.vue';
-import ProgramList from '@/components/ProgramList.vue';
-import ProgramDetails from '@/components/ProgramDetails.vue';
+import ProgramForm from '@/components/Program Form/ProgramForm.vue';
+import ProgramList from '@/views/ProgramList.vue';
+import ProgramDetails from '@/views/ProgramDetails.vue';
+
+import Dashboard from '@/components/Dashboard/links/DashboardLink.vue'
+import MyTrips from '@/components/Dashboard/links/MyTrips.vue'
+import MyApplications from '@/components/Dashboard/links/MyApplications.vue'
+import Users from '@/components/Dashboard/links/UsersLinks.vue'
+import Admins from '@/components/Dashboard/links/AdminsLink.vue'
+import SuperAdmins from '@/components/Dashboard/links/SuperAdmins.vue'
+import PersonalInfo from '@/components/Dashboard/links/PersonalInfo.vue'
+import PageDashboard from '@/views/PageDashboard.vue';
+
 
 const routes = [
   {
     path: '/login',
     name: 'Login',
     component: LoginPage,
-    beforeEnter: (to, from, next) => {
-      if (store.state.auth.token) {
-        // If the user is authenticated, redirect to the dashboard or homepage
-        next('/dashboard');
-      } else {
-        next(); // If not authenticated, proceed to the login page
-      }
-    }
   },
   {
     path: '/register',
     name: 'RegisterPage',
     component: RegisterPage,
-    beforeEnter: (to, from, next) => {
-      if (store.state.auth.token) {
-        // If the user is authenticated, redirect to the dashboard or homepage
-        next('/dashboard');
-      } else {
-        next(); // If not authenticated, proceed to the login page
-      }
-    }
   },
   {
     path: '/password/reset',
@@ -52,10 +44,54 @@ const routes = [
   },
   {
     path: '/dashboard',
-    name: 'PageDashboard',
-    component: Dashboard,
+    component: PageDashboard, 
     meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',
+        name: 'Dashboard',
+        component: Dashboard,
+        meta: { title: 'Dashboard' },
+      },
+      {
+        path: 'my-trips',
+        name: 'My Trips',
+        component: MyTrips, 
+        meta: { title: 'My Trips' },
+      },
+      {
+        path: 'my-applications',
+        name: 'My Applications',
+        component: MyApplications, 
+        meta: { title: 'My Applications' },
+      },
+      {
+        path: 'users',
+        name: 'Users',
+        component: Users, 
+        meta: { title: 'Users' },
+      },
+      {
+        path: 'admins',
+        name: 'Admins',
+        component: Admins, 
+        meta: { title: 'Admins' },
+      },
+      {
+        path: 'super-admins',
+        name: 'Super Admins',
+        component: SuperAdmins, 
+        meta: { title: 'Super Admins' },
+      },
+      {
+        path: 'personal-info',
+        name: 'Personal Information',
+        component: PersonalInfo, 
+        meta: { title: 'Personal Information' },
+      },
+    ],
   },
+  
   {
     path: '/',
     name: 'HomePage',
@@ -93,7 +129,7 @@ const router = createRouter({
   routes,
 });
 
-// Ensure the router is created before using router guards
+// Global navigation guard
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('access_token'); // Token stored in localStorage after login
 

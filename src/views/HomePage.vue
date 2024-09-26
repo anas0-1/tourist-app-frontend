@@ -2,39 +2,7 @@
     <div>
       <NavBar />
       <!-- Hero Section -->
-    <HeroSection />
-  
-      <!-- Search and Filter Options -->
-      <section class="py-12 bg-gray-100">
-        <div class="container mx-auto px-4">
-          <h2 class="text-3xl font-bold mb-8 text-center">Find Your Perfect Trip</h2>
-          <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-4">
-            <input type="text" placeholder="Where do you want to go?" class="w-full md:w-1/3 p-4 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent"/>
-            <select class="w-full md:w-1/6 p-4 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
-              <option>Travel Style</option>
-              <option>Adventure</option>
-              <option>Relaxation</option>
-              <option>Cultural</option>
-            </select>
-            <select class="w-full md:w-1/6 p-4 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
-              <option>Duration</option>
-              <option>1-3 days</option>
-              <option>4-7 days</option>
-              <option>8+ days</option>
-            </select>
-            <select class="w-full md:w-1/6 p-4 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
-              <option>Budget</option>
-              <option>Economy</option>
-              <option>Standard</option>
-              <option>Luxury</option>
-            </select>
-            <button class="w-full md:w-auto bg-yellow-500 text-gray-800 py-4 px-8 rounded-lg text-lg font-semibold hover:bg-yellow-400 transition duration-300">
-              Search
-            </button>
-          </div>
-        </div>
-      </section>
-  
+    <HeroSection />  
       <!-- Featured Programs -->
       <section class="py-16">
         <div class="container mx-auto px-4">
@@ -106,10 +74,10 @@
   
   <script>
 import { ref } from 'vue';
-import NavBar from '@/components/NavBar.vue';
-import AppFooter from '@/components/Footer.vue';
-import ScrollToTop from '@/components/ScrollToTop .vue';
-import HeroSection from '@/components/heroSection.vue';
+import NavBar from '@/components/tools/NavBar.vue';
+import AppFooter from '@/components/tools/Footer.vue';
+import ScrollToTop from '@/components/tools/ScrollToTop .vue';
+import HeroSection from '@/components/tools/heroSection.vue';
 
 export default {
   name: 'HomePage',

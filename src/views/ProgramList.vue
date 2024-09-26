@@ -41,10 +41,10 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import NavBar from '@/components/NavBar.vue';
-import AppFooter from '@/components/Footer.vue';
-import SearchBar from '@/components/SearchBar.vue';
-import ProgramCard from '@/components/ProgramCard.vue';
+import NavBar from '@/components/tools/NavBar.vue';
+import AppFooter from '@/components/tools/Footer.vue';
+import SearchBar from '@/components/Programs list/SearchBar.vue';
+import ProgramCard from '@/components/Programs list/ProgramCard.vue';
 
 export default {
   components: {

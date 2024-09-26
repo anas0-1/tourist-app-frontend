@@ -1,5 +1,5 @@
 <template>
-  <section class="relative py-20 bg-cover bg-center" style="background-image: url('@/assets/Fecran.jpg');">
+  <section class="relative py-20 bg-cover bg-center background-image">
     <div class="absolute inset-0 bg-black opacity-50"></div>
     <div class="container mx-auto px-4 relative z-10">
       <h1 class="text-4xl md:text-6xl font-bold text-white mb-8 text-center leading-tight">
@@ -65,6 +65,14 @@
     </div>
   </section>
 </template>
+
+<style scoped>
+.background-image {
+  background-image: url('@/assets/Fecran.jpg');
+  background-size: cover; /* Ensures the image covers the entire section */
+  background-position: center; /* Centers the image */
+}
+</style>
 
 <script>
 export default {

@@ -29,13 +29,13 @@
 
 <script>
 import { mapState } from 'vuex';
-import NavBar from '@/components/NavBar.vue';
-import AppFooter from '@/components/Footer.vue';
-import HeroSection from '@/components/HeroSection1.vue';
-import ProgramDetailsSection from '@/components/ProgramDetailsSection.vue';
-import GallerySection from '@/components/GallerySection.vue';
-import ActivitiesTimeline from '@/components/ActivitiesTimeline.vue';
-import BookingSection from '@/components/BookingSection.vue';
+import NavBar from '@/components/tools/NavBar.vue';
+import AppFooter from '@/components/tools/Footer.vue';
+import HeroSection from '@/components/Program Details/HeroSection1.vue';
+import ProgramDetailsSection from '@/components/Program Details/ProgramDetailsSection.vue';
+import GallerySection from '@/components/Program Details/GallerySection.vue';
+import ActivitiesTimeline from '@/components/Program Details/ActivitiesTimeline.vue';
+import BookingSection from '@/components/Program Details/BookingSection.vue';
 import 'animate.css';
 
 export default {

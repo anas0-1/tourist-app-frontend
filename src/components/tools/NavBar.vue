@@ -16,7 +16,7 @@
             <button class="hover:text-yellow-500 transition duration-300 ease-in-out px-3 py-2 rounded-md text-sm font-medium">
               Programs
             </button>
-            <div class="absolute hidden group-hover:block bg-white text-black rounded-lg shadow-lg py-3 transition-all duration-500 ease-in-out transform -translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 z-10">
+            <div class="absolute hidden group-hover:block bg-white text-black rounded-lg shadow-lg py-3 transition-all duration-500 ease-in-out transform -translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 z-30">
               <router-link to="/programs/create" class="block px-6 py-2 hover:bg-gray-200 rounded-lg transition duration-300">Create Program</router-link>
               <router-link to="/programs" class="block px-6 py-2 hover:bg-gray-200 rounded-lg transition duration-300">Explore Programs</router-link>
             </div>
@@ -27,7 +27,7 @@
             <button class="hover:text-yellow-500 transition duration-300 ease-in-out px-3 py-2 rounded-md text-sm font-medium">
               VIP Services
             </button>
-            <div class="absolute hidden group-hover:block bg-white text-black rounded-lg shadow-lg py-3 transition-all duration-500 ease-in-out transform -translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 z-10">
+            <div class="absolute hidden group-hover:block bg-white text-black rounded-lg shadow-lg py-3 transition-all duration-500 ease-in-out transform -translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 z-30">
               <router-link to="/vip-challenges" class="block px-6 py-2 hover:bg-gray-200 rounded-lg transition duration-300">Challenges</router-link>
               <router-link to="/vip-rewards" class="block px-6 py-2 hover:bg-gray-200 rounded-lg transition duration-300">Rewards</router-link>
               <router-link to="/vip-levels" class="block px-6 py-2 hover:bg-gray-200 rounded-lg transition duration-300">VIP Levels</router-link>

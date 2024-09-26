@@ -295,8 +295,8 @@
 <script>
 import { ref, reactive } from 'vue';
 import axios from "@/axios"; 
-import NavBar from "@/components/NavBar.vue";
-import AppFooter from "@/components/Footer.vue";
+import NavBar from "@/components/tools/NavBar.vue";
+import AppFooter from "@/components/tools/Footer.vue";
 import { useToast } from "vue-toastification";
 
 export default {
