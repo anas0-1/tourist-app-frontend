@@ -5,7 +5,7 @@
       <div class="bg-white shadow-xl rounded-lg overflow-hidden">
         <div class="px-4 py-5 sm:p-6">
           <h1 class="text-3xl font-extrabold text-gray-900 mb-6">
-            Create New Travel Program
+            {{ isEditing ? 'Edit Travel Program' : 'Create New Travel Program' }}
           </h1>
 
           <!-- Progress Bar -->
@@ -74,6 +74,15 @@
                   placeholder="Enter price in MAD"
                 />
               </div>
+              <div>
+                <label for="startingDate" class="block text-sm font-medium text-gray-700">Starting Date</label>
+                <input
+                  id="startingDate"
+                  v-model="generalInfo.startingDate"
+                  type="date"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                />
+              </div>
             </div>
             <div>
               <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
@@ -105,7 +114,7 @@
                   class="relative"
                 >
                   <img
-                    :src="image.preview"
+                    :src="image.preview || image"
                     :alt="`Uploaded ${index + 1}`"
                     class="h-24 w-full object-cover rounded-lg"
                   />
@@ -242,6 +251,10 @@
                   <dd class="mt-1 text-sm text-gray-900">{{ generalInfo.price }} MAD</dd>
                 </div>
                 <div>
+                  <dt class="text-sm font-medium text-gray-500">Starting Date</dt>
+                  <dd class="mt-1 text-sm text-gray-900">{{ generalInfo.startingDate }}</dd>
+                </div>
+                <div>
                   <dt class="text-sm font-medium text-gray-500">Number of Images</dt>
                   <dd class="mt-1 text-sm text-gray-900">{{ generalInfo.images.length }}</dd>
                 </div>
@@ -282,7 +295,7 @@
               @click="submitProgram"
               class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              Create Program
+              {{ isEditing ? 'Update Program' : 'Create Program' }}
             </button>
           </div>
         </div>
@@ -293,11 +306,13 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import axios from "@/axios"; 
 import NavBar from "@/components/tools/NavBar.vue";
 import AppFooter from "@/components/tools/Footer.vue";
 import { useToast } from "vue-toastification";
+import { format } from 'date-fns';
 
 export default {
   components: {
@@ -306,15 +321,23 @@ export default {
   },
   setup() {
     const toast = useToast();
+    const route = useRoute();
+    const router = useRouter();
+
     const currentStep = ref(1);
+    const isEditing = ref(false);
+    const programId = ref(null);
+
     const generalInfo = reactive({
       name: "",
       description: "",
       duration: "",
       location: "",
       price: "",
+      startingDate: "",
       images: [],
     });
+
     const newActivity = reactive({
       name: "",
       description: "",
@@ -322,8 +345,50 @@ export default {
       duration: "",
       location: "",
     });
+
     const activities = ref([]);
 
+    onMounted(async () => {
+      if (route.params.id) {
+        isEditing.value = true;
+        programId.value = route.params.id;
+        await fetchProgramData();
+      }
+    });
+    const fetchProgramData = async () => {
+  try {
+    const response = await axios.get(`/programs/${programId.value}`);
+    console.log('API Response:', response.data);
+
+    if (!response.data) {
+      throw new Error('Invalid response structure');
+    }
+
+    const program = response.data;
+    
+    Object.assign(generalInfo, {
+      name: program.name || '',
+      description: program.description || '',
+      duration: program.duration || '',
+      location: program.location || '',
+      price: program.price || 0,
+      startingDate: program.starting_date ? format(new Date(program.starting_date), 'yyyy-MM-dd') : '',
+    });
+
+    // Handle images
+    generalInfo.images = program.media ? program.media.map(m => ({
+  id: m.id,
+  url: m.url.startsWith('http') ? m.url : `${process.env.MIX_APP_URL}/storage/${m.url}`
+})) : [];
+
+
+    activities.value = program.activities || [];
+  } catch (error) {
+    console.error('Error in fetchProgramData:', error);
+    console.error('Error details:', error.response ? error.response.data : 'No response data');
+    toast.error("Failed to fetch program data: " + (error.message || 'Unknown error'));
+  }
+};
     const handleImageUpload = (event) => {
       const files = Array.from(event.target.files);
       if (files.length + generalInfo.images.length > 5) {
@@ -340,7 +405,9 @@ export default {
     };
 
     const removeImage = (index) => {
-      URL.revokeObjectURL(generalInfo.images[index].preview);
+      if (generalInfo.images[index].preview) {
+        URL.revokeObjectURL(generalInfo.images[index].preview);
+      }
       generalInfo.images.splice(index, 1);
     };
 
@@ -375,8 +442,8 @@ export default {
         formData.append('duration', generalInfo.duration);
         formData.append('location', generalInfo.location);
         formData.append('price', generalInfo.price);
+        formData.append('starting_date', generalInfo.startingDate);
 
-        // Append activities as an array
         activities.value.forEach((activity, index) => {
           Object.keys(activity).forEach(key => {
             formData.append(`activities[${index}][${key}]`, activity[key]);
@@ -384,18 +451,31 @@ export default {
         });
 
         generalInfo.images.forEach((img, index) => {
-          formData.append(`images[${index}]`, img.file);
-        });
-
-        const response = await axios.post('/programs', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
+          if (img.file) {
+            formData.append(`images[${index}]`, img.file);
+          } else {
+            formData.append(`existing_images[${index}]`, img);
           }
         });
 
-        if (response.status === 201) {
-          toast.success("Program created successfully!");
-          resetForm();
+        let response;
+        if (isEditing.value) {
+          response = await axios.post(`/programs/${programId.value}?_method=PUT`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+        } else {
+          response = await axios.post('/programs', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+        }
+
+        if (response.status === 200 || response.status === 201) {
+          toast.success(isEditing.value ? "Program updated successfully!" : "Program created successfully!");
+          router.push({ name: 'My Trips' });
         } else {
           toast.error("An unexpected error occurred. Please try again.");
         }
@@ -417,21 +497,9 @@ export default {
       }
     };
 
-    const resetForm = () => {
-      currentStep.value = 1;
-      Object.assign(generalInfo, {
-        name: '',
-        description: '',
-        duration: '',
-        location: '',
-        price: '',
-        images: [],
-      });
-      activities.value = [];
-    };
-
     return {
       currentStep,
+      isEditing,
       generalInfo,
       newActivity,
       activities,
@@ -441,7 +509,6 @@ export default {
       addActivity,
       removeActivity,
       submitProgram,
-      resetForm,
     };
   },
 };
