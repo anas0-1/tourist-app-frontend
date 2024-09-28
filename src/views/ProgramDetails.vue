@@ -12,7 +12,7 @@
       <program-details-section :program="program" />
       <gallery-section :program="program" @open-lightbox="openLightbox" />
       <activities-timeline :program="program" />
-      <booking-section />
+      <BookingSection :programId="program.id" />
 
       <!-- Image Lightbox -->
       <div v-if="lightboxOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 animate__animated animate__fadeIn">

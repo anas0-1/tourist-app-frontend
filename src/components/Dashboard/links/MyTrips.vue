@@ -65,15 +65,20 @@
                     <div class="text-sm text-gray-900">{{ formatDate(program.starting_date) }}</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <router-link
-                      :to="{ name: 'EditProgram', params: { id: program.id } }"
-                      class="text-blue-600 hover:text-blue-900 mr-3"
-                    >
-                      <PencilIcon class="h-5 w-5" />
-                    </router-link>
-                    <button @click="confirmDelete(program.id)" class="text-red-600 hover:text-red-900">
-                      <TrashIcon class="h-5 w-5" />
-                    </button>
+                    <div class="flex items-center space-x-2">
+                      <router-link
+                        :to="{ name: 'EditProgram', params: { id: program.id } }"
+                        class="text-blue-600 hover:text-blue-900"
+                      >
+                        <PencilIcon class="h-5 w-5" />
+                      </router-link>
+                      <button @click="confirmDelete(program.id)" class="text-red-600 hover:text-red-900">
+                        <TrashIcon class="h-5 w-5" />
+                      </button>
+                      <button @click="openApplicantModal(program)" class="text-green-600 hover:text-green-900">
+                        <UsersIcon class="h-5 w-5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -94,14 +99,23 @@
         </div>
       </div>
     </div>
+
+    <!-- Applicant Modal -->
+    <ApplicantModal
+      :is-open="showApplicantModal"
+      :program-id="selectedProgram?.id"
+      :program-name="selectedProgram?.name"
+      @close="closeApplicantModal"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useStore } from 'vuex';
-import { PlusIcon, PencilIcon, TrashIcon, LoaderIcon, AlertCircleIcon, InboxIcon } from 'lucide-vue-next';
+import { PlusIcon, PencilIcon, TrashIcon, LoaderIcon, AlertCircleIcon, InboxIcon, UsersIcon } from 'lucide-vue-next';
 import { useToast } from 'vue-toastification';
+import ApplicantModal from '@/components/tools/applicantModal.vue';
 
 const store = useStore();
 const toast = useToast();
@@ -110,6 +124,8 @@ const loading = ref(true);
 const error = ref(null);
 const showDeleteModal = ref(false);
 const programToDelete = ref(null);
+const showApplicantModal = ref(false);
+const selectedProgram = ref(null);
 
 const user = computed(() => store.getters['user/user']);
 const allPrograms = computed(() => store.getters['programD/allPrograms']);
@@ -147,5 +163,15 @@ const deleteProgram = async () => {
   } catch (err) {
     toast.error('Failed to delete program. Please try again.');
   }
+};
+
+const openApplicantModal = (program) => {
+  selectedProgram.value = program;
+  showApplicantModal.value = true;
+};
+
+const closeApplicantModal = () => {
+  showApplicantModal.value = false;
+  selectedProgram.value = null;
 };
 </script>

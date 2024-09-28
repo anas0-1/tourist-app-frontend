@@ -40,6 +40,7 @@
                   type="text"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                   placeholder="Enter program name"
+                  required
                 />
               </div>
               <div>
@@ -50,6 +51,7 @@
                   type="text"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                   placeholder="e.g., 7 days"
+                  required
                 />
               </div>
               <div>
@@ -60,6 +62,7 @@
                   type="text"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                   placeholder="Enter program location"
+                  required
                 />
               </div>
               <div>
@@ -72,15 +75,17 @@
                   step="0.01"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                   placeholder="Enter price in MAD"
+                  required
                 />
               </div>
               <div>
-                <label for="startingDate" class="block text-sm font-medium text-gray-700">Starting Date</label>
+                <label for="starting_date" class="block text-sm font-medium text-gray-700">Starting Date</label>
                 <input
-                  id="startingDate"
-                  v-model="generalInfo.startingDate"
+                  id="starting_date"
+                  v-model="generalInfo.starting_date"
                   type="date"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  required
                 />
               </div>
             </div>
@@ -92,6 +97,7 @@
                 rows="4"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                 placeholder="Enter program description"
+                required
               ></textarea>
             </div>
             <div>
@@ -114,7 +120,7 @@
                   class="relative"
                 >
                   <img
-                    :src="image.preview || image"
+                    :src="image.url || image.preview"
                     :alt="`Uploaded ${index + 1}`"
                     class="h-24 w-full object-cover rounded-lg"
                   />
@@ -130,10 +136,39 @@
             </div>
           </div>
 
-          <!-- Step 2: Add Activities -->
+          <!-- Step 2: Activities -->
           <div v-if="currentStep === 2" class="space-y-6">
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">Add Activities</h2>
-            <form @submit.prevent="addActivity" class="space-y-4">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Activities</h2>
+            
+            <!-- Existing Activities -->
+            <div v-if="activities.length > 0">
+              <h3 class="text-lg font-semibold mb-2">Existing Activities</h3>
+              <ul class="space-y-4">
+                <li v-for="activity in activities" :key="activity.id" class="bg-gray-50 p-4 rounded-md shadow">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h4 class="font-semibold">{{ activity.name }}</h4>
+                      <p class="text-sm text-gray-600">{{ activity.description }}</p>
+                      <p class="text-sm text-gray-600">
+                        Time: {{ activity.time }} | Duration: {{ activity.duration }} | Location: {{ activity.location }}
+                      </p>
+                    </div>
+                    <div>
+                      <button @click="editActivity(activity)" class="text-blue-600 hover:text-blue-800 mr-2">
+                        Edit
+                      </button>
+                      <button @click="removeActivity(activity.id)" class="text-red-600 hover:text-red-800">
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Add/Edit Activity Form -->
+            <form @submit.prevent="addOrUpdateActivity" class="space-y-4">
+              <input v-model="newActivity.id" type="hidden">
               <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
                   <label for="activityName" class="block text-sm font-medium text-gray-700">Activity Name</label>
@@ -142,86 +177,57 @@
                     v-model="newActivity.name"
                     type="text"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                    placeholder="Enter activity name"
+                    required
                   />
                 </div>
                 <div>
-                  <label for="activityTime" class="block text-sm font-medium text-gray-700">Activity Time</label>
+                  <label for="activityTime" class="block text-sm font-medium text-gray-700">Time</label>
                   <input
                     id="activityTime"
                     v-model="newActivity.time"
                     type="time"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    required
                   />
                 </div>
                 <div>
-                  <label for="activityDuration" class="block text-sm font-medium text-gray-700">Activity Duration</label>
+                  <label for="activityDuration" class="block text-sm font-medium text-gray-700">Duration</label>
                   <input
                     id="activityDuration"
                     v-model="newActivity.duration"
                     type="text"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                    placeholder="e.g., 2 hours"
+                    required
                   />
                 </div>
                 <div>
-                  <label for="activityLocation" class="block text-sm font-medium text-gray-700">Activity Location</label>
+                  <label for="activityLocation" class="block text-sm font-medium text-gray-700">Location</label>
                   <input
                     id="activityLocation"
                     v-model="newActivity.location"
                     type="text"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                    placeholder="Enter activity location"
+                    required
                   />
                 </div>
               </div>
               <div>
-                <label for="activityDescription" class="block text-sm font-medium text-gray-700">Activity Description</label>
+                <label for="activityDescription" class="block text-sm font-medium text-gray-700">Description</label>
                 <textarea
                   id="activityDescription"
                   v-model="newActivity.description"
                   rows="3"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                  placeholder="Enter activity description"
+                  required
                 ></textarea>
               </div>
               <button
                 type="submit"
                 class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                Add Activity
+                {{ newActivity.id ? 'Update Activity' : 'Add New Activity' }}
               </button>
             </form>
-
-            <div v-if="activities.length > 0" class="mt-8">
-              <h3 class="text-lg font-semibold mb-4">Added Activities</h3>
-              <ul class="space-y-4">
-                <li
-                  v-for="(activity, index) in activities"
-                  :key="index"
-                  class="bg-gray-50 p-4 rounded-md shadow"
-                >
-                  <div class="flex justify-between items-start">
-                    <div>
-                      <h4 class="font-semibold text-lg">{{ activity.name }}</h4>
-                      <p class="text-sm text-gray-600">{{ activity.description }}</p>
-                      <p class="text-sm text-gray-600">
-                        Time: {{ activity.time }} | Duration: {{ activity.duration }} | Location: {{ activity.location }}
-                      </p>
-                    </div>
-                    <button
-                      @click="removeActivity(index)"
-                      class="text-red-600 hover:text-red-800"
-                      aria-label="Remove activity"
-                    >
-                      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                      </svg>
-                    </button>
-                  </div>
-                </li>
-              </ul>
-            </div>
           </div>
 
           <!-- Step 3: Review -->
@@ -252,7 +258,7 @@
                 </div>
                 <div>
                   <dt class="text-sm font-medium text-gray-500">Starting Date</dt>
-                  <dd class="mt-1 text-sm text-gray-900">{{ generalInfo.startingDate }}</dd>
+                  <dd class="mt-1 text-sm text-gray-900">{{ generalInfo.starting_date }}</dd>
                 </div>
                 <div>
                   <dt class="text-sm font-medium text-gray-500">Number of Images</dt>
@@ -263,7 +269,7 @@
             <div class="bg-gray-50 p-6 rounded-lg shadow">
               <h3 class="text-xl font-semibold mb-4">Activities</h3>
               <ul class="space-y-4">
-                <li v-for="(activity, index) in activities" :key="index" class="border-b pb-4 last:border-b-0 last:pb-0">
+                <li v-for="activity in activities" :key="activity.id" class="border-b pb-4 last:border-b-0 last:pb-0">
                   <h4 class="font-semibold">{{ activity.name }}</h4>
                   <p class="text-sm text-gray-600">{{ activity.description }}</p>
                   <p class="text-sm text-gray-600">
@@ -279,13 +285,13 @@
             <button
               v-if="currentStep > 1"
               @click="currentStep--"
-              class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus: ring-blue-500"
             >
               Previous
             </button>
             <button
               v-if="currentStep < 3"
-              @click="currentStep++"
+              @click="handleNext"
               class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Next
@@ -308,13 +314,14 @@
 <script>
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import axios from "@/axios"; 
+import axios from "@/axios";
 import NavBar from "@/components/tools/NavBar.vue";
 import AppFooter from "@/components/tools/Footer.vue";
 import { useToast } from "vue-toastification";
 import { format } from 'date-fns';
 
 export default {
+  name: 'ProgramForm',
   components: {
     NavBar,
     AppFooter,
@@ -334,11 +341,12 @@ export default {
       duration: "",
       location: "",
       price: "",
-      startingDate: "",
+      starting_date: "",
       images: [],
     });
 
     const newActivity = reactive({
+      id: null,
       name: "",
       description: "",
       time: "",
@@ -347,6 +355,7 @@ export default {
     });
 
     const activities = ref([]);
+    const imagesToDelete = ref([]);
 
     onMounted(async () => {
       if (route.params.id) {
@@ -355,15 +364,10 @@ export default {
         await fetchProgramData();
       }
     });
+
     const fetchProgramData = async () => {
   try {
     const response = await axios.get(`/programs/${programId.value}`);
-    console.log('API Response:', response.data);
-
-    if (!response.data) {
-      throw new Error('Invalid response structure');
-    }
-
     const program = response.data;
     
     Object.assign(generalInfo, {
@@ -372,23 +376,21 @@ export default {
       duration: program.duration || '',
       location: program.location || '',
       price: program.price || 0,
-      startingDate: program.starting_date ? format(new Date(program.starting_date), 'yyyy-MM-dd') : '',
+      starting_date: program.starting_date ? format(new Date(program.starting_date), 'yyyy-MM-dd') : '',
     });
 
-    // Handle images
     generalInfo.images = program.media ? program.media.map(m => ({
-  id: m.id,
-  url: m.url.startsWith('http') ? m.url : `${process.env.MIX_APP_URL}/storage/${m.url}`
-})) : [];
-
+      id: m.id,
+      url: m.url
+    })) : [];
 
     activities.value = program.activities || [];
   } catch (error) {
-    console.error('Error in fetchProgramData:', error);
-    console.error('Error details:', error.response ? error.response.data : 'No response data');
-    toast.error("Failed to fetch program data: " + (error.message || 'Unknown error'));
+    console.error('Error fetching program data:', error);
+    toast.error("Failed to fetch program data. Please try again.");
   }
 };
+
     const handleImageUpload = (event) => {
       const files = Array.from(event.target.files);
       if (files.length + generalInfo.images.length > 5) {
@@ -405,97 +407,123 @@ export default {
     };
 
     const removeImage = (index) => {
-      if (generalInfo.images[index].preview) {
-        URL.revokeObjectURL(generalInfo.images[index].preview);
+      const image = generalInfo.images[index];
+      if (image.id) {
+        imagesToDelete.value.push(image.id);
+      }
+      if (image.preview) {
+        URL.revokeObjectURL(image.preview);
       }
       generalInfo.images.splice(index, 1);
     };
 
-    const addActivity = () => {
-      if (
-        newActivity.name &&
-        newActivity.description &&
-        newActivity.time &&
-        newActivity.duration &&
-        newActivity.location
-      ) {
-        activities.value.push({ ...newActivity });
-        Object.assign(newActivity, {
-          name: "",
-          description: "",
-          time: "",
-          duration: "",
-          location: "",
-        });
+    const addOrUpdateActivity = () => {
+      if (newActivity.id) {
+        const index = activities.value.findIndex(a => a.id === newActivity.id);
+        if (index !== -1) {
+          activities.value[index] = { ...newActivity };
+        }
+      } else {
+        activities.value.push({ ...newActivity, id: Date.now() });
       }
+      resetNewActivity();
     };
 
-    const removeActivity = (index) => {
-      activities.value.splice(index, 1);
+    const resetNewActivity = () => {
+      Object.assign(newActivity, {
+        id: null,
+        name: "",
+        description: "",
+        time: "",
+        duration: "",
+        location: "",
+      });
+    };
+
+    const editActivity = (activity) => {
+      Object.assign(newActivity, activity);
+    };
+
+    const removeActivity = (activityId) => {
+      activities.value = activities.value.filter(a => a.id !== activityId);
+    };
+
+    const handleNext = () => {
+      if (currentStep.value === 1 && !validateGeneralInfo()) {
+        return;
+      }
+      if (currentStep.value === 2 && activities.value.length === 0) {
+        toast.error("Please add at least one activity.");
+        return;
+      }
+      currentStep.value++;
+    };
+
+    const validateGeneralInfo = () => {
+      const requiredFields = ['name', 'description', 'duration', 'location', 'price', 'starting_date'];
+      for (const field of requiredFields) {
+        if (!generalInfo[field]) {
+          toast.error(`Please fill in the ${field.replace(/([A-Z])/g, ' $1').toLowerCase()} field.`);
+          return false;
+        }
+      }
+      return true;
     };
 
     const submitProgram = async () => {
-      try {
-        const formData = new FormData();
-        formData.append('name', generalInfo.name);
-        formData.append('description', generalInfo.description);
-        formData.append('duration', generalInfo.duration);
-        formData.append('location', generalInfo.location);
-        formData.append('price', generalInfo.price);
-        formData.append('starting_date', generalInfo.startingDate);
-
-        activities.value.forEach((activity, index) => {
-          Object.keys(activity).forEach(key => {
-            formData.append(`activities[${index}][${key}]`, activity[key]);
-          });
-        });
-
-        generalInfo.images.forEach((img, index) => {
-          if (img.file) {
-            formData.append(`images[${index}]`, img.file);
-          } else {
-            formData.append(`existing_images[${index}]`, img);
-          }
-        });
-
-        let response;
-        if (isEditing.value) {
-          response = await axios.post(`/programs/${programId.value}?_method=PUT`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          });
-        } else {
-          response = await axios.post('/programs', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          });
-        }
-
-        if (response.status === 200 || response.status === 201) {
-          toast.success(isEditing.value ? "Program updated successfully!" : "Program created successfully!");
-          router.push({ name: 'My Trips' });
-        } else {
-          toast.error("An unexpected error occurred. Please try again.");
-        }
-      } catch (error) {
-        if (error.response) {
-          if (error.response.status === 403) {
-            toast.error("You have reached the free use limit. Please subscribe to create more programs.");
-          } else if (error.response.data && error.response.data.message) {
-            toast.error(error.response.data.message);
-          } else {
-            toast.error("An error occurred. Please try again.");
-          }
-        } else if (error.request) {
-          toast.error("No response received from the server. Please check your internet connection.");
-        } else {
-          toast.error("An unexpected error occurred. Please try again.");
-        }
-        console.error('Error submitting program:', error);
+  try {
+    const formData = new FormData();
+    Object.keys(generalInfo).forEach(key => {
+      if (key !== 'images') {
+        formData.append(key, generalInfo[key]);
       }
-    };
+    });
+
+    activities.value.forEach((activity, index) => {
+      Object.keys(activity).forEach(key => {
+        formData.append(`activities[${index}][${key}]`, activity[key]);
+      });
+    });
+
+    // Handle existing images
+    const existingImages = generalInfo.images.filter(img => img.id);
+    existingImages.forEach((img, index) => {
+      formData.append(`existing_images[${index}]`, img.id);
+    });
+
+    // Handle new images
+    const newImages = generalInfo.images.filter(img => img.file);
+    newImages.forEach((img, index) => {
+      formData.append(`new_images[${index}]`, img.file);
+    });
+
+    // Handle images to delete
+    imagesToDelete.value.forEach((id, index) => {
+      formData.append(`images_to_delete[${index}]`, id);
+    });
+
+    let response;
+    if (isEditing.value) {
+      response = await axios.post(`/programs/${programId.value}?_method=PUT`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+    } else {
+      response = await axios.post('/programs', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+    }
+
+    if (response.status === 200 || response.status === 201) {
+      toast.success(isEditing.value ? "Program updated successfully!" : "Program created successfully!");
+      router.push({ name: 'My Trips' });
+    } else {
+      toast.error("An unexpected error occurred. Please try again.");
+    }
+  } catch (error) {
+    console.error('Error submitting program:', error);
+    toast.error("Failed to submit program. Please try again.");
+  }
+};
 
     return {
       currentStep,
@@ -503,28 +531,18 @@ export default {
       generalInfo,
       newActivity,
       activities,
-      toast,
       handleImageUpload,
       removeImage,
-      addActivity,
+      addOrUpdateActivity,
+      editActivity,
       removeActivity,
+      handleNext,
       submitProgram,
     };
-  },
+  }
 };
 </script>
 
-<style>
-.Vue-Toastification__toast {
-  @apply rounded-lg shadow-md;
-}
-.Vue-Toastification__toast--success {
-  @apply bg-green-500;
-}
-.Vue-Toastification__toast--error {
-  @apply bg-red-500;
-}
-.Vue-Toastification__toast-body {
-  @apply text-white font-semibold;
-}
+<style scoped>
+/* Add any additional scoped styles here if needed */
 </style>

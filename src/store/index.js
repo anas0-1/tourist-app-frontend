@@ -5,6 +5,7 @@ import user from './modules/user';
 import role from './modules/role';
 import program from './modules/program';
 import programD from './modules/programD'; 
+import applications from './modules/applications';
 
 const store = createStore({
   modules: {
@@ -12,7 +13,8 @@ const store = createStore({
     user,
     role,
     program,
-    programD
+    programD,
+    applications
   },
 });
 
