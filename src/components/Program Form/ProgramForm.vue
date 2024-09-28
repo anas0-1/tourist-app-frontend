@@ -392,19 +392,18 @@ export default {
 };
 
     const handleImageUpload = (event) => {
-      const files = Array.from(event.target.files);
-      if (files.length + generalInfo.images.length > 5) {
-        toast.error("You can only upload up to 5 images.");
-        return;
-      }
-      const newImages = files
-        .slice(0, 5 - generalInfo.images.length)
-        .map((file) => ({
-          file,
-          preview: URL.createObjectURL(file),
-        }));
-      generalInfo.images.push(...newImages);
-    };
+  const files = Array.from(event.target.files);
+  if (files.length + generalInfo.images.length > 5) {
+    toast.error("You can only upload up to 5 images.");
+    return;
+  }
+  const newImages = files.map((file) => ({
+    file,
+    preview: URL.createObjectURL(file),
+  }));
+  generalInfo.images.push(...newImages);
+};
+
 
     const removeImage = (index) => {
       const image = generalInfo.images[index];
@@ -473,12 +472,15 @@ export default {
     const submitProgram = async () => {
   try {
     const formData = new FormData();
+
+    // Append general info fields
     Object.keys(generalInfo).forEach(key => {
-      if (key !== 'images') {
+      if (key !== 'images') { // Exclude images since we handle them separately
         formData.append(key, generalInfo[key]);
       }
     });
 
+    // Handle activities
     activities.value.forEach((activity, index) => {
       Object.keys(activity).forEach(key => {
         formData.append(`activities[${index}][${key}]`, activity[key]);
@@ -494,7 +496,7 @@ export default {
     // Handle new images
     const newImages = generalInfo.images.filter(img => img.file);
     newImages.forEach((img, index) => {
-      formData.append(`new_images[${index}]`, img.file);
+      formData.append(`images[${index}]`, img.file); // Use 'images' directly as per your structure
     });
 
     // Handle images to delete
@@ -524,6 +526,8 @@ export default {
     toast.error("Failed to submit program. Please try again.");
   }
 };
+
+
 
     return {
       currentStep,

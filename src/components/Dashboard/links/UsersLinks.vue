@@ -9,17 +9,37 @@
             <h2 class="text-xl font-semibold text-gray-800">All Users</h2>
             <div class="flex space-x-2">
               <input 
+                v-model="searchQuery"
                 type="text" 
                 placeholder="Search users..." 
                 class="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-              <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out">
+              <select 
+                v-model="selectedRole"
+                class="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Roles</option>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+                <option value="superadmin">Super Admin</option>
+              </select>
+              <button @click="searchUsers" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out">
                 Search
               </button>
             </div>
           </div>
           
-          <div class="overflow-x-auto">
+          <div v-if="isLoading" class="text-center py-4">
+            <LoaderIcon class="animate-spin h-8 w-8 mx-auto text-blue-500" />
+            <p class="mt-2 text-gray-600">Loading users...</p>
+          </div>
+
+          <div v-else-if="error" class="text-center py-4">
+            <AlertCircleIcon class="h-8 w-8 mx-auto text-red-500" />
+            <p class="mt-2 text-red-600">{{ error }}</p>
+          </div>
+
+          <div v-else class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
@@ -31,7 +51,7 @@
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="user in users" :key="user.id">
+                <tr v-for="user in filteredUsers" :key="user.id">
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                       <div class="flex-shrink-0 h-10 w-10">
@@ -47,18 +67,22 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      {{ user.role }}
+                      {{ user.roles.join(', ') }}
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {{ user.joinedDate }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button class="text-blue-600 hover:text-blue-900 mr-3">
+                    <button @click="showUserDetails(user.id)" class="text-blue-600 hover:text-blue-900 mr-3">
                       <EyeIcon class="h-5 w-5" />
                     </button>
-                    <button class="text-yellow-600 hover:text-yellow-900">
-                      <MessageSquareIcon class="h-5 w-5" />
+                    <button 
+                      v-if="canDeleteUser(user.role)"
+                      @click="deleteUser(user.id)" 
+                      class="text-red-600 hover:text-red-900"
+                    >
+                      <TrashIcon class="h-5 w-5" />
                     </button>
                   </td>
                 </tr>
@@ -68,52 +92,73 @@
           
           <div class="mt-4 flex justify-between items-center">
             <div class="text-sm text-gray-700">
-              Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">97</span> results
-            </div>
-            <div class="flex-1 flex justify-between sm:justify-end">
-              <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                Previous
-              </button>
-              <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                Next
-              </button>
+              Showing <span class="font-medium">{{ filteredUsers.length }}</span> results
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <UserDetailsModal 
+      :isOpen="isModalOpen" 
+      :user="selectedUser" 
+      @close="closeModal"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { EyeIcon, MessageSquareIcon } from 'lucide-vue-next';
+import { ref, onMounted, computed } from 'vue';
+import { useStore } from 'vuex';import { EyeIcon, TrashIcon, LoaderIcon, AlertCircleIcon } from 'lucide-vue-next';
+import UserDetailsModal from '@/components/Dashboard/links/UserDetailsModal.vue';
 
-const users = ref([
-  {
-    id: 1,
-    name: 'Jane Cooper',
-    email: 'jane.cooper@example.com',
-    role: 'User',
-    joinedDate: 'Jan 15, 2023',
-    avatar: '/placeholder.svg?height=40&width=40',
-  },
-  {
-    id: 2,
-    name: 'Cody Fisher',
-    email: 'cody.fisher@example.com',
-    role: 'User',
-    joinedDate: 'Feb 3, 2023',
-    avatar: '/placeholder.svg?height=40&width=40',
-  },
-  {
-    id: 3,
-    name: 'Esther Howard',
-    email: 'esther.howard@example.com',
-    role: 'User',
-    joinedDate: 'Mar 20, 2023',
-    avatar: '/placeholder.svg?height=40&width=40',
-  },
-  // Add more user objects as needed
-]);
+const store = useStore();
+const searchQuery = ref('');
+const selectedRole = ref('');
+const isModalOpen = ref(false);
+
+const users = computed(() => store.getters['users/getUsers']);
+const isLoading = computed(() => store.getters['users/isLoading']);
+const error = computed(() => store.getters['users/getError']);
+const selectedUser = computed(() => store.getters['users/getSelectedUser']);
+const currentUserRole = computed(() => store.getters['role/userRoles']);
+const filteredUsers = computed(() => {
+  return users.value.filter(user => {
+    const roleMatch = selectedRole.value ? user.role === selectedRole.value : true;
+    const searchMatch = user.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                        user.email.toLowerCase().includes(searchQuery.value.toLowerCase());
+    return roleMatch && searchMatch;
+  });
+});
+
+onMounted(async () => {
+  await store.dispatch('role/fetchUserRole');
+  await store.dispatch('users/fetchUsers');
+  console.log('Fetched user role:', store.getters['role/userRoles']); 
+});
+
+const searchUsers = () => {
+  // The filtering is handled by the computed property filteredUsers
+};
+
+const showUserDetails = async (userId) => {
+  await store.dispatch('users/fetchUserDetails', userId);
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+};
+
+const canDeleteUser = (userRole) => {
+  console.log('Current user role:', currentUserRole.value); // Add this for debugging
+  if (currentUserRole.value === 'superadmin') return true;
+  if (currentUserRole.value === 'admin' && userRole === 'user') return true;
+  return false;
+};
+const deleteUser = async (userId) => {
+  if (confirm('Are you sure you want to delete this user?')) {
+    await store.dispatch('users/deleteUser', userId);
+  }
+};
 </script>

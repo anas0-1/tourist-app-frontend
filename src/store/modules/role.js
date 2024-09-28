@@ -1,4 +1,5 @@
-import axios from 'axios';
+// In store/modules/role.js
+import axios from '@/axios';
 
 const state = {
   roles: [],
@@ -14,15 +15,9 @@ const mutations = {
 };
 
 const actions = {
-  async fetchUserRole({ commit, rootState }) {
-    if (!rootState.auth.token) return;
-
+  async fetchUserRole({ commit }) {
     try {
-      const response = await axios.get('http://localhost:8000/api/user-role', {
-        headers: {
-          Authorization: `Bearer ${rootState.auth.token}`,
-        },
-      });
+      const response = await axios.get('/user-role');
       commit('setRoles', response.data.roles);
     } catch (error) {
       console.error('Failed to fetch user role', error);
