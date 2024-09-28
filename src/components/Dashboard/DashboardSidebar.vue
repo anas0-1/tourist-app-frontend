@@ -68,8 +68,6 @@ const allNavItems = [
   { name: 'My Trips', href: '/dashboard/my-trips', icon: MapIcon, roles: ['user', 'admin', 'super_admin'] },
   { name: 'My Applications', href: '/dashboard/my-applications', icon: GlobeIcon, roles: ['user', 'admin', 'super_admin'] },
   { name: 'Users', href: '/dashboard/users', icon: UsersIcon, roles: ['super_admin', 'admin'] },
-  { name: 'Admins', href: '/dashboard/admins', icon: UsersIcon, roles: ['super_admin'] },
-  { name: 'Super Admins', href: '/dashboard/super-admins', icon: UsersIcon, roles: ['super_admin'] },
   { name: 'Personal Information', href: '/dashboard/personal-info', icon: BookOpenIcon, roles: ['user', 'admin', 'super_admin'] },
 ];
 

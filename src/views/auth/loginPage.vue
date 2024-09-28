@@ -95,8 +95,13 @@ export default {
       errorMessage: '',
     };
   },
+  created() {
+    if (this.$store.getters['auth/isAuthenticated']) {
+      this.$router.push('/');
+    }
+  },
   methods: {
-    ...mapActions('auth', ['login']), // Namespaced module for auth
+    ...mapActions('auth', ['login']), 
     async loginUser() {
       try {
         await this.login({ email: this.email, password: this.password });

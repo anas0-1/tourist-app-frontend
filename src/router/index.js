@@ -14,8 +14,6 @@ import Dashboard from '@/components/Dashboard/links/DashboardLink.vue'
 import MyTrips from '@/components/Dashboard/links/MyTrips.vue'
 import MyApplications from '@/components/Dashboard/links/MyApplications.vue'
 import Users from '@/components/Dashboard/links/UsersLinks.vue'
-import Admins from '@/components/Dashboard/links/AdminsLink.vue'
-import SuperAdmins from '@/components/Dashboard/links/SuperAdmins.vue'
 import PersonalInfo from '@/components/Dashboard/links/PersonalInfo.vue'
 import PageDashboard from '@/views/PageDashboard.vue';
 
@@ -70,18 +68,6 @@ const routes = [
         name: 'Users',
         component: Users, 
         meta: { title: 'Users' },
-      },
-      {
-        path: 'admins',
-        name: 'Admins',
-        component: Admins, 
-        meta: { title: 'Admins' },
-      },
-      {
-        path: 'super-admins',
-        name: 'Super Admins',
-        component: SuperAdmins, 
-        meta: { title: 'Super Admins' },
       },
       {
         path: 'personal-info',

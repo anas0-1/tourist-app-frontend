@@ -7,20 +7,6 @@
         <div class="p-6">
           <form @submit.prevent="updateProfile">
             <div class="mb-6">
-              <label for="avatar" class="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
-              <div class="flex items-center">
-                <img :src="user.avatar" alt="User Avatar" class="h-16 w-16 rounded-full mr-4">
-                <button
-                  type="button"
-                  class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition duration-300 ease-in-out flex items-center"
-                >
-                  <UploadIcon class="h-5 w-5 mr-2" />
-                  Change Picture
-                </button>
-              </div>
-            </div>
-
-            <div class="mb-6">
               <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Name</label>
               <input 
                 id="name" 
@@ -59,32 +45,6 @@
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
             </div>
-
-            <div class="mb-6">
-              <label for="language" class="block text-sm font-medium text-gray-700 mb-2">Preferred Language</label>
-              <select 
-                id="language" 
-                v-model="user.language" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="en">English</option>
-                <option value="es">Español</option>
-                <option value="fr">Français</option>
-                <option value="de">Deutsch</option>
-              </select>
-            </div>
-
-            <div class="mb-6">
-              <label class="flex items-center">
-                <input 
-                  type="checkbox" 
-                  v-model="user.notifications" 
-                  class="form-checkbox h-5 w-5 text-blue-600"
-                >
-                <span class="ml-2 text-sm text-gray-700">Receive email notifications</span>
-              </label>
-            </div>
-            
             <div class="flex justify-between items-center">
               <button 
                 type="submit" 
@@ -131,50 +91,69 @@
       </div>
 
       <!-- Success Message -->
-      <div v-if="showSuccessMessage" class="fixed bottom-5 right-5 bg-green-500 text-white px-6 py-3 rounded-md shadow-lg">
+      <div v-if="successMessage" class="fixed bottom-5 right-5 bg-green-500 text-white px-6 py-3 rounded-md shadow-lg">
         {{ successMessage }}
+      </div>
+
+      <!-- Error Message -->
+      <div v-if="errorMessage" class="fixed bottom-5 right-5 bg-red-500 text-white px-6 py-3 rounded-md shadow-lg">
+        {{ errorMessage }}
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { UploadIcon, SaveIcon, TrashIcon, XIcon } from 'lucide-vue-next';
+import { ref, computed, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { SaveIcon, TrashIcon, XIcon } from 'lucide-vue-next';
+
+const store = useStore();
 
 const user = ref({
-  name: 'John Doe',
-  email: 'john.doe@example.com',
-  avatar: '/placeholder.svg?height=64&width=64',
+  id: null,
+  name: '',
+  email: '',
   newPassword: '',
   confirmPassword: '',
-  language: 'en',
-  notifications: true,
 });
 
 const showDeleteConfirmation = ref(false);
-const showSuccessMessage = ref(false);
-const successMessage = ref('');
+const successMessage = computed(() => store.getters['user/successMessage']);
+const errorMessage = computed(() => store.getters['user/errorMessage']);
 
-const updateProfile = () => {
-  // Implement profile update logic here
-  console.log('Profile updated', user.value);
-  showSuccessMessage.value = true;
-  successMessage.value = 'Profile updated successfully!';
-  setTimeout(() => {
-    showSuccessMessage.value = false;
-  }, 3000);
+onMounted(async () => {
+  await store.dispatch('user/fetchUser');
+  const storeUser = store.getters['user/user'];
+  if (storeUser) {
+    user.value = { ...storeUser, newPassword: '', confirmPassword: '' };
+  }
+});
+
+const updateProfile = async () => {
+  if (user.value.newPassword !== user.value.confirmPassword) {
+    store.commit('user/setErrorMessage', 'Passwords do not match');
+    return;
+  }
+
+  const userData = {
+    id: user.value.id,
+    name: user.value.name,
+    email: user.value.email,
+  };
+
+  if (user.value.newPassword) {
+    userData.password = user.value.newPassword;
+    userData.password_confirmation = user.value.confirmPassword;
+  }
+
+  await store.dispatch('user/updateUser', userData);
+  user.value.newPassword = '';
+  user.value.confirmPassword = '';
 };
 
-const deleteAccount = () => {
-  // Implement account deletion logic here
-  console.log('Account deleted');
+const deleteAccount = async () => {
+  await store.dispatch('user/deleteUser', user.value.id);
   showDeleteConfirmation.value = false;
-  showSuccessMessage.value = true;
-  successMessage.value = 'Account deleted successfully!';
-  setTimeout(() => {
-    showSuccessMessage.value = false;
-    // Redirect to login page or home page after account deletion
-  }, 3000);
 };
 </script>
