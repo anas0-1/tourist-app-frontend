@@ -12,6 +12,7 @@
       <program-details-section :program="program" />
       <gallery-section :program="program" @open-lightbox="openLightbox" />
       <activities-timeline :program="program" />
+      <rating-section :programId="program.id" />
       <BookingSection :programId="program.id" />
 
       <!-- Image Lightbox -->
@@ -35,6 +36,7 @@ import HeroSection from '@/components/Program Details/HeroSection1.vue';
 import ProgramDetailsSection from '@/components/Program Details/ProgramDetailsSection.vue';
 import GallerySection from '@/components/Program Details/GallerySection.vue';
 import ActivitiesTimeline from '@/components/Program Details/ActivitiesTimeline.vue';
+import RatingSection from '@/components/Program Details/RatingSection.vue';
 import BookingSection from '@/components/Program Details/BookingSection.vue';
 import 'animate.css';
 
@@ -47,6 +49,7 @@ export default {
     ProgramDetailsSection,
     GallerySection,
     ActivitiesTimeline,
+    RatingSection,
     BookingSection
   },
   data() {

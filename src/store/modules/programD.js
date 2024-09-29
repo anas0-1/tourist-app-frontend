@@ -1,9 +1,12 @@
 import instance from '@/axios'; 
+import axios from '@/axios';
 
 const state = {
   programs: [],
   currentProgram: null,
   activities: [],
+  loading: false,
+  error: null
 };
 
 const getters = {
@@ -75,6 +78,18 @@ const actions = {
       console.error('Error fetching all programs:', error);
     }
   },
+  async rateProgram({ commit }, { programId, rating }) {
+    try {
+      const response = await axios.post(`/programs/${programId}/rate`, { rating });
+      commit('UPDATE_PROGRAM_RATING', { 
+        programId, 
+        averageRating: response.data.average_rating 
+      });
+    } catch (error) {
+      console.error('Error rating program:', error);
+      throw error;
+    }
+  }
 };
 
 const url = 'http://localhost:8000/storage';
@@ -124,6 +139,21 @@ const mutations = {
   },
   deleteProgram: (state, id) => {
     state.programs = state.programs.filter(program => program.id !== id);
+  },
+  SET_LOADING(state, loading) {
+    state.loading = loading;
+  },
+  SET_ERROR(state, error) {
+    state.error = error;
+  },
+  UPDATE_PROGRAM_RATING(state, { programId, averageRating }) {
+    const program = state.programs.find(p => p.id === programId);
+    if (program) {
+      program.averageRating = averageRating;
+    }
+    if (state.currentProgram && state.currentProgram.id === programId) {
+      state.currentProgram.averageRating = averageRating;
+    }
   }
 };
 

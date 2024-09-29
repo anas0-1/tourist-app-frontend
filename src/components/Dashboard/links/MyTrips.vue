@@ -56,7 +56,7 @@
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{ program.duration }}</div>
+                    <div class="text-sm text-gray-900">{{ program.duration }} days</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="text-sm text-gray-900">${{ program.price }}</div>

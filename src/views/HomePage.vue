@@ -92,7 +92,7 @@ export default {
       {
         title: "Serene Bali Retreat",
         description: "Experience tranquility and culture in the heart of Bali.",
-        image: "/api/placeholder/400/300",
+        image: require('@/assets/Room.jpg'),
         price: "From $1,299"
       },
       {
