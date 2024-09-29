@@ -21,7 +21,7 @@
                 <option value="">All Roles</option>
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
-                <option value="superadmin">Super Admin</option>
+                <option value="super_admin">Super Admin</option>
               </select>
               <button @click="searchUsers" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out">
                 Search
@@ -66,8 +66,8 @@
                     <div class="text-sm text-gray-900">{{ user.email }}</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      {{ user.roles.join(', ') }}
+                    <span :class="getRoleClass(user.roles[0])">
+                      {{ user.roles[0] }}
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -78,7 +78,7 @@
                       <EyeIcon class="h-5 w-5" />
                     </button>
                     <button 
-                      v-if="canDeleteUser(user.role)"
+                      v-if="canDeleteUser(user.roles[0])"
                       @click="deleteUser(user.id)" 
                       class="text-red-600 hover:text-red-900"
                     >
@@ -109,7 +109,8 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useStore } from 'vuex';import { EyeIcon, TrashIcon, LoaderIcon, AlertCircleIcon } from 'lucide-vue-next';
+import { useStore } from 'vuex';
+import { EyeIcon, TrashIcon, LoaderIcon, AlertCircleIcon } from 'lucide-vue-next';
 import UserDetailsModal from '@/components/Dashboard/links/UserDetailsModal.vue';
 
 const store = useStore();
@@ -121,10 +122,11 @@ const users = computed(() => store.getters['users/getUsers']);
 const isLoading = computed(() => store.getters['users/isLoading']);
 const error = computed(() => store.getters['users/getError']);
 const selectedUser = computed(() => store.getters['users/getSelectedUser']);
-const currentUserRole = computed(() => store.getters['role/userRoles']);
+const currentUserRole = computed(() => store.getters['role/userRoles'][0]);
+
 const filteredUsers = computed(() => {
   return users.value.filter(user => {
-    const roleMatch = selectedRole.value ? user.role === selectedRole.value : true;
+    const roleMatch = selectedRole.value ? user.roles.includes(selectedRole.value) : true;
     const searchMatch = user.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
                         user.email.toLowerCase().includes(searchQuery.value.toLowerCase());
     return roleMatch && searchMatch;
@@ -134,7 +136,7 @@ const filteredUsers = computed(() => {
 onMounted(async () => {
   await store.dispatch('role/fetchUserRole');
   await store.dispatch('users/fetchUsers');
-  console.log('Fetched user role:', store.getters['role/userRoles']); 
+  console.log('Fetched user role:', store.getters['role/userRoles']);
 });
 
 const searchUsers = () => {
@@ -151,14 +153,28 @@ const closeModal = () => {
 };
 
 const canDeleteUser = (userRole) => {
-  console.log('Current user role:', currentUserRole.value); // Add this for debugging
-  if (currentUserRole.value === 'superadmin') return true;
+  if (currentUserRole.value === 'super_admin') return true;
   if (currentUserRole.value === 'admin' && userRole === 'user') return true;
   return false;
 };
+
 const deleteUser = async (userId) => {
   if (confirm('Are you sure you want to delete this user?')) {
     await store.dispatch('users/deleteUser', userId);
+  }
+};
+
+const getRoleClass = (role) => {
+  const baseClasses = 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full';
+  switch (role) {
+    case 'user':
+      return `${baseClasses} bg-green-100 text-green-800`;
+    case 'admin':
+      return `${baseClasses} bg-orange-100 text-orange-800`;
+    case 'super_admin':
+      return `${baseClasses} bg-purple-100 text-purple-800`;
+    default:
+      return `${baseClasses} bg-gray-100 text-gray-800`;
   }
 };
 </script>

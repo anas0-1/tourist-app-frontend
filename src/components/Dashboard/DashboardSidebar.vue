@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-center h-16 px-4 bg-yellow-600">
       <GlobeIcon class="h-8 w-8 text-white" />
-      <span class="ml-2 text-xl font-bold text-white">TravelJoy</span>
+      <span class="ml-2 text-xl font-bold text-white">Dashboard</span>
     </div>
 
     <!-- Navigation -->
@@ -67,7 +67,7 @@ const allNavItems = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon, roles: ['user', 'admin', 'super_admin'] },
   { name: 'My Trips', href: '/dashboard/my-trips', icon: MapIcon, roles: ['user', 'admin', 'super_admin'] },
   { name: 'My Applications', href: '/dashboard/my-applications', icon: GlobeIcon, roles: ['user', 'admin', 'super_admin'] },
-  { name: 'Users', href: '/dashboard/users', icon: UsersIcon, roles: ['super_admin', 'admin'] },
+  { name: 'Users', href: '/dashboard/users', icon: UsersIcon, roles: ['super_admin', 'admin','user'] },
   { name: 'Personal Information', href: '/dashboard/personal-info', icon: BookOpenIcon, roles: ['user', 'admin', 'super_admin'] },
 ];
 

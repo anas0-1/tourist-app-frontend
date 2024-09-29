@@ -12,7 +12,7 @@ const mutations = {
     state.users = users.map(user => ({
       ...user,
       joinedDate: new Date(user.created_at).toLocaleDateString(),
-      roles: user.roles || [] // Ensure roles is always an array
+      roles: user.roles || []
     }));
   },
   SET_LOADING(state, loading) {
@@ -22,7 +22,11 @@ const mutations = {
     state.error = error;
   },
   SET_SELECTED_USER(state, user) {
-    state.selectedUser = user;
+    state.selectedUser = {
+      ...user,
+      joinedDate: new Date(user.created_at).toLocaleDateString(),
+      roles: user.roles || []
+    };
   },
   REMOVE_USER(state, userId) {
     state.users = state.users.filter(user => user.id !== userId);
@@ -52,12 +56,15 @@ const actions = {
     }
   },
   async fetchUserDetails({ commit }, userId) {
+    commit('SET_LOADING', true);
     try {
       const response = await axios.get(`/users/${userId}`);
       commit('SET_SELECTED_USER', response.data);
     } catch (error) {
       commit('SET_ERROR', 'Failed to fetch user details');
       console.error('Error fetching user details:', error);
+    } finally {
+      commit('SET_LOADING', false);
     }
   },
 };
