@@ -475,7 +475,7 @@ export default {
 
     // Append general info fields
     Object.keys(generalInfo).forEach(key => {
-      if (key !== 'images') { // Exclude images since we handle them separately
+      if (key !== 'images') {
         formData.append(key, generalInfo[key]);
       }
     });
@@ -483,6 +483,10 @@ export default {
     // Handle activities
     activities.value.forEach((activity, index) => {
       Object.keys(activity).forEach(key => {
+        // If it's a new activity (id is a temporary number), don't send the id
+        if (key === 'id' && typeof activity[key] === 'number') {
+          return;
+        }
         formData.append(`activities[${index}][${key}]`, activity[key]);
       });
     });
@@ -496,7 +500,7 @@ export default {
     // Handle new images
     const newImages = generalInfo.images.filter(img => img.file);
     newImages.forEach((img, index) => {
-      formData.append(`images[${index}]`, img.file); // Use 'images' directly as per your structure
+      formData.append(`images[${index}]`, img.file);
     });
 
     // Handle images to delete
@@ -523,7 +527,14 @@ export default {
     }
   } catch (error) {
     console.error('Error submitting program:', error);
-    toast.error("Failed to submit program. Please try again.");
+    if (error.response && error.response.data && error.response.data.errors) {
+      // Display specific error messages from the server
+      Object.values(error.response.data.errors).forEach(errorMessages => {
+        errorMessages.forEach(message => toast.error(message));
+      });
+    } else {
+      toast.error("Failed to submit program. Please try again.");
+    }
   }
 };
 

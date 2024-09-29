@@ -66,7 +66,15 @@ const actions = {
     } catch (error) {
       console.error('Error deleting program:', error);
     }
-  }
+  },
+  async fetchAllPrograms({ commit }) {
+    try {
+      const response = await instance.get('/programs');
+      commit('setPrograms', response.data);
+    } catch (error) {
+      console.error('Error fetching all programs:', error);
+    }
+  },
 };
 
 const url = 'http://localhost:8000/storage';

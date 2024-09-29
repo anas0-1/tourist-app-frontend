@@ -48,7 +48,21 @@ const actions = {
     } finally {
       commit('SET_LOADING', false);
     }
-  }
+  },
+
+  async fetchAllApplications({ commit }) {
+    commit('SET_LOADING', true);
+    try {
+      const response = await axios.get('/user/applications');
+      commit('SET_APPLICATIONS', response.data);
+      commit('SET_ERROR', null);
+    } catch (error) {
+      commit('SET_ERROR', 'Failed to fetch applications');
+      console.error('Error fetching applications:', error);
+    } finally {
+      commit('SET_LOADING', false);
+    }
+  },
 };
 
 const getters = {

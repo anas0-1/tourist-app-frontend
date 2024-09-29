@@ -8,6 +8,7 @@ import program from './modules/program';
 import programD from './modules/programD'; 
 import applications from './modules/applications';
 
+
 const store = createStore({
   modules: {
     auth,
