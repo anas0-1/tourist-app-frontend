@@ -53,7 +53,7 @@ export default {
         require('@/assets/Room.jpg'),
         require('@/assets/Snow.png'),
         require('@/assets/hiking.jpg'),
-        require('@/assets/Fecran.jpg'),
+        require('@/assets/jap.jpg'),
       ],
     };
   },

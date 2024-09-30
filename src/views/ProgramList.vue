@@ -8,11 +8,11 @@
         <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Discover Extraordinary Journeys</h2>
         
         <div v-if="filteredPrograms.length > 0" class="flex flex-wrap gap-8 justify-center">
-          <ProgramCard
-            v-for="program in filteredPrograms"
-            :key="program.id"
-            :program="program"
-          />
+          <ProgramCard 
+  v-for="program in filteredPrograms"
+  :key="program.id"
+  :program="program"
+/>
         </div>
 
         <!-- No results message -->

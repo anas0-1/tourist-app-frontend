@@ -87,7 +87,6 @@ const routes = [
     path: '/programs',
     name: 'ProgramList',
     component: ProgramList,
-    meta: { requiresAuth: true },
   },
   {
     path: '/programs/create',

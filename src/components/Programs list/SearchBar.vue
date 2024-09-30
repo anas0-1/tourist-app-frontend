@@ -80,7 +80,7 @@ export default {
     return {
       searchQuery: '',
       selectedDuration: '',
-      selectedPrice: ''  // Keep this to store the selected price value
+      selectedPrice: ''  
     };
   },
   methods: {

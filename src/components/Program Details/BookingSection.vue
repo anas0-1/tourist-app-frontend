@@ -38,6 +38,7 @@
 
 <script>
 import axios from 'axios';
+import emailjs from 'emailjs-com';  // Import emailjs
 import { useToast } from 'vue-toastification';
 import { mapState, mapGetters } from 'vuex';
 
@@ -69,8 +70,8 @@ export default {
   },
   methods: {
     async createApplication() {
+      const toast = useToast();
       if (!this.isAuthenticated) {
-        const toast = useToast();
         toast.error("You need to be logged in to apply for a program.");
         return;
       }
@@ -86,7 +87,6 @@ export default {
         tickets: this.booking.tickets
       };
 
-      const toast = useToast();
       console.log("Submitting application with payload:", payload);
 
       try {
@@ -100,15 +100,46 @@ export default {
             }
           }
         );
+
         console.log("Response from server:", response.data);
         toast.success(response.data.message);
+
+        // Send email via emailjs
+        this.sendConfirmationEmail();
+
         this.resetForm();
       } catch (error) {
         console.error("Error creating application:", error);
         toast.error(error.response?.data?.message || 'Failed to create application');
       }
     },
-    
+
+    sendConfirmationEmail() {
+  const serviceID = 'service_694tswr';  // Your EmailJS service ID
+  const templateID = 'template_bkhi7y2';  // Your EmailJS template ID
+  const userID = 'pZvZqHnvjeZDJdQk_';  // Your EmailJS user ID
+
+  const emailParams = {
+    first_name: this.booking.firstName,  // For dynamic name
+    last_name: this.booking.lastName,
+    email: this.booking.email,  // Pass the email from the form
+    tickets: this.booking.tickets,
+    program_id: this.programId
+  };
+
+  emailjs.send(serviceID, templateID, emailParams, userID)
+    .then(() => {
+      console.log('Email sent successfully!');
+      const toast = useToast();
+      toast.success('Booking confirmation email sent.');
+    })
+    .catch((error) => {
+      console.error('Error sending email:', error);
+      const toast = useToast();
+      toast.error('Failed to send confirmation email.');
+    });
+},
+
     validateForm() {
       const toast = useToast();
       if (!this.booking.firstName.trim()) {
@@ -137,5 +168,5 @@ export default {
       this.booking.tickets = 1;
     }
   }
-}
+};
 </script>
