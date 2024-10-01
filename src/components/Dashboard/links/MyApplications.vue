@@ -29,16 +29,12 @@
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Program</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
                 <tr v-for="application in applications" :key="application.id">
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
-                      <div class="flex-shrink-0 h-10 w-10">
-                        <img class="h-10 w-10 rounded-full object-cover" :src="getProgramImage(application.program)" :alt="application.program.name" />
-                      </div>
                       <div class="ml-4">
                         <div class="text-sm font-medium text-gray-900">{{ application.program.name }}</div>
                         <div class="text-sm text-gray-500">{{ application.program.location }}</div>
@@ -59,11 +55,6 @@
                       {{ getStatus(application.program) }}
                     </span>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button @click="viewApplication(application.program.id, application.id)" class="text-blue-600 hover:text-blue-900">
-                      <EyeIcon class="h-5 w-5" />
-                    </button>
-                  </td>
                 </tr>
               </tbody>
             </table>
@@ -77,7 +68,7 @@
 <script setup>
 import { computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
-import { EyeIcon, LoaderIcon, AlertCircleIcon, InboxIcon } from 'lucide-vue-next';
+import { LoaderIcon, AlertCircleIcon, InboxIcon } from 'lucide-vue-next';
 import { format, addDays, isBefore, isWithinInterval } from 'date-fns';
 
 const store = useStore();
@@ -125,16 +116,5 @@ const getStatusClass = (program) => {
     default:
       return '';
   }
-};
-
-const getProgramImage = (program) => {
-  return program.media && program.media.length > 0
-    ? `http://localhost:8000/storage${program.media[0].url}`
-    : '/placeholder.svg?height=40&width=40';
-};
-
-const viewApplication = (programId, applicationId) => {
-  // Implement view application logic here
-  console.log(`Viewing application ${applicationId} for program ${programId}`);
 };
 </script>
