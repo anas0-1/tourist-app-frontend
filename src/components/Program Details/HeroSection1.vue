@@ -4,7 +4,7 @@
     <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 flex items-end">
       <div class="p-8">
         <h1 class="text-4xl md:text-5xl font-bold text-white mb-2 animate__animated animate__fadeInUp">{{ program.name }}</h1>
-        <p class="text-xl text-white animate__animated animate__fadeInUp animate__delay-0.5s">{{ program.duration }} </p>
+        <p class="text-xl text-white animate__animated animate__fadeInUp animate__delay-0.5s">{{ program.duration }} Days </p>
       </div>
     </div>
   </div>

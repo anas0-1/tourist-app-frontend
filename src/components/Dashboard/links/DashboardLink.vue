@@ -1,5 +1,4 @@
 <template>
-  <!-- Page content -->
   <main class="flex-1 overflow-y-auto bg-blue-50 p-6">
     <!-- Welcome Section -->
     <div class="max-w-7xl mx-auto">
@@ -116,7 +115,7 @@ const upcomingTrips = computed(() => {
       id: program.id,
       name: program.name,
       starting_date: program.starting_date,
-      ending_date: program.ending_date || program.starting_date, // Fallback to starting_date if ending_date is not available
+      ending_date: program.ending_date || program.starting_date,
       status: 'Upcoming',
       image: program.images[0] || '/placeholder.svg?height=48&width=48',
     }));

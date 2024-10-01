@@ -57,27 +57,24 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router'; 
 import { GlobeIcon, HomeIcon, MapIcon, UsersIcon, BookOpenIcon, LogOutIcon } from 'lucide-vue-next';
 
-// Use Vuex store
 const store = useStore();
+const router = useRouter();
 
 const username = computed(() => store.state.user.user?.name || 'Loading...');
 
-// Define navigation items
 const allNavItems = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon, roles: ['user', 'admin', 'super_admin'] },
   { name: 'My Trips', href: '/dashboard/my-trips', icon: MapIcon, roles: ['user', 'admin', 'super_admin'] },
   { name: 'My Applications', href: '/dashboard/my-applications', icon: GlobeIcon, roles: ['user', 'admin', 'super_admin'] },
-  { name: 'Users', href: '/dashboard/users', icon: UsersIcon, roles: ['super_admin', 'admin','user'] },
+  { name: 'Users', href: '/dashboard/users', icon: UsersIcon, roles: ['super_admin', 'admin'] },
   { name: 'Personal Information', href: '/dashboard/personal-info', icon: BookOpenIcon, roles: ['user', 'admin', 'super_admin'] },
 ];
 
-// Filter navigation items based on user roles
 const filteredNavItems = computed(() => {
   const userRoles = store.getters['role/userRoles'];
   return allNavItems.filter(item => item.roles.some(role => userRoles.includes(role)));
 });
 
-// Fetch user data and handle logout
 const fetchUserData = async () => {
   await store.dispatch('user/fetchUser');
   await store.dispatch('role/fetchUserRole');
@@ -85,15 +82,10 @@ const fetchUserData = async () => {
 
 const logout = async () => {
   await store.dispatch('auth/logout');
-  // Redirect to login page after logout
-  useRouter.push('/login');
+  router.push('/login');
 };
 
 onMounted(() => {
   fetchUserData();
 });
 </script>
-
-<style scoped>
-/* Add your styles here */
-</style>

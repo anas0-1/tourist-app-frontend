@@ -136,7 +136,6 @@ const filteredUsers = computed(() => {
 onMounted(async () => {
   await store.dispatch('role/fetchUserRole');
   await store.dispatch('users/fetchUsers');
-  console.log('Fetched user role:', store.getters['role/userRoles']);
 });
 
 const searchUsers = () => {

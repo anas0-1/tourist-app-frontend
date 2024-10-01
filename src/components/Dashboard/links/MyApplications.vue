@@ -8,15 +8,18 @@
           <h2 class="text-xl font-semibold text-gray-800 mb-4">Your Program Applications</h2>
           
           <div v-if="isLoading" class="text-center py-4">
-            <p class="text-gray-600">Loading applications...</p>
+            <LoaderIcon class="animate-spin h-8 w-8 mx-auto text-blue-500" />
+            <p class="mt-2 text-gray-600">Loading applications...</p>
           </div>
 
           <div v-else-if="error" class="text-center py-4">
-            <p class="text-red-600">{{ error }}</p>
+            <AlertCircleIcon class="h-8 w-8 mx-auto text-red-500" />
+            <p class="mt-2 text-red-600">{{ error }}</p>
           </div>
 
           <div v-else-if="applications.length === 0" class="text-center py-4">
-            <p class="text-gray-600">You haven't applied to any programs yet.</p>
+            <InboxIcon class="h-8 w-8 mx-auto text-gray-400" />
+            <p class="mt-2 text-gray-600">You haven't applied to any programs yet.</p>
           </div>
 
           <div v-else class="overflow-x-auto">
@@ -74,7 +77,7 @@
 <script setup>
 import { computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
-import { EyeIcon } from 'lucide-vue-next';
+import { EyeIcon, LoaderIcon, AlertCircleIcon, InboxIcon } from 'lucide-vue-next';
 import { format, addDays, isBefore, isWithinInterval } from 'date-fns';
 
 const store = useStore();

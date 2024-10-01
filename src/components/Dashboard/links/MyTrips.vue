@@ -116,6 +116,7 @@ import { useStore } from 'vuex';
 import { PlusIcon, PencilIcon, TrashIcon, LoaderIcon, AlertCircleIcon, InboxIcon, UsersIcon } from 'lucide-vue-next';
 import { useToast } from 'vue-toastification';
 import ApplicantModal from '@/components/tools/applicantModal.vue';
+import { format } from 'date-fns';
 
 const store = useStore();
 const toast = useToast();
@@ -146,8 +147,7 @@ onMounted(async () => {
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  return format(new Date(dateString), 'MMM d, yyyy');
 };
 
 const confirmDelete = (id) => {
