@@ -2,7 +2,7 @@
     <div class="min-h-screen flex items-center justify-center bg-cover bg-center background-image">
       <div class="max-w-md w-full space-y-8 p-10 bg-white bg-opacity-80 backdrop-filter backdrop-blur-md rounded-xl shadow-xl">
         <div class="text-center">
-          <h1 class="text-4xl font-extrabold text-blue-800">TravelDreams</h1>
+          <h1 class="text-4xl font-extrabold text-blue-800">TravelEASE</h1>
           <h2 class="mt-6 text-2xl font-bold text-gray-700">Create your account</h2>
         </div>
         <form class="mt-8 space-y-6" @submit.prevent="registerUser">

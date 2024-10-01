@@ -3,7 +3,7 @@
     <div class="max-w-md w-full space-y-8 p-10 bg-white bg-opacity-80 backdrop-filter backdrop-blur-md rounded-xl shadow-xl">
       <div class="text-center">
         <h1 class="text-4xl font-extrabold text-blue-800">
-          TravelDreams
+          TravelEASE
         </h1>
         <h2 class="mt-6 text-2xl font-bold text-gray-700">
           Your adventure begins here
@@ -40,17 +40,6 @@
         </div>
 
         <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <input
-              id="remember-me"
-              name="remember-me"
-              type="checkbox"
-              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-            />
-            <label for="remember-me" class="ml-2 block text-sm text-gray-700">
-              Remember me
-            </label>
-          </div>
           <div class="text-sm">
             <router-link to="/password/reset" class="font-medium text-blue-600 hover:text-blue-500">
               Forgot password?

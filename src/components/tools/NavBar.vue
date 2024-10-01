@@ -4,7 +4,7 @@
       <div class="flex items-center justify-between h-16">
         <!-- Logo -->
         <div class="flex items-center">
-          <img src="/logo.png" alt="TouristApp Logo" class="h-8 w-auto" />
+          TravelEASE
         </div>
 
         <!-- Main Navigation -->
